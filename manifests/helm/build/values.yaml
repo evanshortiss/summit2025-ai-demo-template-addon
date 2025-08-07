@@ -1,0 +1,20 @@
+# Default values for langchain-agent-build.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+app:
+  name: langchain-agent
+
+git:
+  repo: https://github.com/${{values.github_org}}/${{values.component_id}}.git
+  branch: main
+
+image:
+  registry: quay.io
+  organization: ${{values.image_organization}}
+  name: ${{values.component_id}}
+  tag: latest
+
+# Pipeline configuration
+pipeline:
+  name: langchain-agent-build

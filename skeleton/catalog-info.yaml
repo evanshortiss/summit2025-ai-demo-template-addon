@@ -1,0 +1,38 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{ values.name }}
+  title: ${{ values.name | title }} AI Agent
+  description: ${{ values.description }}
+  tags:
+    - ai
+    - langchain
+    - kafka
+    - python
+    - monitoring
+    - notifications
+  annotations:
+    argocd/app-selector: rht-gitops.com/janus-argocd=${{values.name}}-bootstrap
+    backstage.io/kubernetes-id: ${{values.name}}
+    janus-idp.io/tekton: ${{values.name}}
+    backstage.io/source-location: url:https://${{values.host}}/${{values.destination}}
+    gitlab.com/project-slug: ${{values.destination}}
+    quay.io/repository-slug: ${{values.quay_destination | dump}}
+  links:
+    - url: https://devspaces${{values.cluster}}/#https://${{values.host}}/${{values.destination}}
+      title: OpenShift Dev Spaces (VS Code)
+      icon: web
+    - url: https://devspaces${{values.cluster}}/#https://${{values.host}}/${{values.destination}}?che-editor=che-incubator/che-idea/latest
+      title: OpenShift Dev Spaces (JetBrains IntelliJ)
+      icon: web
+spec:
+  type: service
+  lifecycle: experimental
+  owner: ${{ values.owner }}
+  system: ${{ values.system }}
+  dependsOn:
+    - resource:kafka-message-broker
+    - ${{ values.monitoredTopic }}
+    - resource:openai-service
+  providesApis: []
+  consumesApis: [] 

@@ -1,0 +1,30 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: update-deployment
+  labels:
+    {{- include "langchain-agent-build.labels" . | nindent 4 }}
+spec:
+  description: Update the deployment with the new image
+  params:
+    - name: COMPONENT_ID
+      description: Component ID to update
+      type: string
+    - name: IMAGE
+      description: New image reference to deploy
+      type: string
+  steps:
+    - name: update-deployment
+      image: registry.redhat.io/ubi8/ubi:latest
+      script: |
+        #!/bin/bash
+        echo "Updating deployment $(params.COMPONENT_ID) with image $(params.IMAGE)"
+        
+        # This is a placeholder for the actual deployment update logic
+        # In a real scenario, this would:
+        # 1. Update the deployment manifest
+        # 2. Push changes to git repo
+        # 3. Trigger ArgoCD sync
+        
+        echo "Deployment update completed successfully"

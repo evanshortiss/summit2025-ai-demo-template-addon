@@ -1,0 +1,182 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: langchain-agent-python
+  title: LangChain AI Agent for Kafka Message Analysis
+  description: Create an AI-powered agent that monitors Kafka topics, analyzes failed message routing, and sends notifications to Backstage
+  tags:
+    - ai
+    - langchain
+    - kafka
+    - python
+    - monitoring
+    - notifications
+spec:
+  owner: platform-team
+  type: service
+  parameters:
+    - title: Service Information
+      required:
+        - name
+        - description
+        - owner
+        - system
+        - repoUrl
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name for the AI agent service
+          pattern: '^[a-z0-9-]+$'
+          ui:help: 'Must be lowercase letters, numbers, and hyphens only'
+          ui:autofocus: true
+        description:
+          title: Description
+          type: string
+          description: A description of what this AI agent will monitor and analyze
+        owner:
+          title: Owner
+          type: string
+          description: Owner team for this AI agent
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind: 
+                - Group
+                - User
+        system:
+          title: System
+          type: string
+          description: The system this AI agent belongs to
+          ui:field: EntityPicker
+          ui:options:
+            catalogFilter:
+              kind: System
+        repoUrl:
+          title: Repository Location
+          type: string
+          description: Choose a location for the repository
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - gitlab.com
+
+    - title: Kafka Configuration
+      required:
+        - consumerGroup
+        - monitoredTopic
+      properties:
+        consumerGroup:
+          title: Consumer Group ID
+          type: string
+          description: Kafka consumer group ID for this agent
+          pattern: '^[a-z0-9-]+$'
+          ui:help: 'Must be lowercase letters, numbers, and hyphens only'
+          ui:autofocus: true
+        monitoredTopic:
+          title: Monitored Topic
+          type: string
+          description: Select a Kafka topic to monitor for failed routing messages
+          ui:field: EntityPicker
+          ui:options:
+            allowArbitraryValues: false
+            allowMultiple: false
+            catalogFilter:
+              - kind: Resource
+                spec.type: topic
+
+    - title: AI Configuration
+      required:
+        - aiModel
+        - analysisPrompt
+      properties:
+        aiModel:
+          title: AI Model
+          type: string
+          description: AI model resource to use for analysis
+          ui:field: EntityPicker
+          ui:options:
+            catalogFilter:
+              kind: Resource
+              spec.type: ai-model
+
+        analysisPrompt:
+          title: Analysis Prompt Template
+          type: string
+          ui:widget: textarea
+          description: Custom prompt template for analyzing failed messages
+          default: |
+            You are an expert system analyst reviewing a message that failed to be routed properly.
+            
+            Analyze the following message and determine the most likely cause of the routing failure:
+            
+            Message: {message}
+            
+            Consider these common failure causes:
+            1. Ambiguous intent - message could fit multiple categories
+            2. Missing context - insufficient information to classify
+            3. New domain - message relates to a domain not covered by existing categories
+            4. Technical format issues - message format or encoding problems
+            5. Language barriers - non-English or unclear language
+            
+            Provide a brief analysis and suggested resolution.
+
+  steps:
+    - id: parseTopicEntity
+      name: Parse Topic Entity Reference
+      action: catalog:fetch
+      input:
+        entityRef: ${{ parameters.monitoredTopic }}
+
+    - id: fetch
+      name: Fetch Template
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          host: ${{ parameters.repo.host }}
+          owner: ${{ parameters.repo.owner }}
+          destination: ${{ parameters.repo.destination }}
+          quay_destination: ${{ parameters.repo.quay_destination }}
+          name: ${{ parameters.name }}
+          description: ${{ parameters.description }}
+          system: ${{ parameters.system }}
+          consumerGroup: ${{ parameters.consumerGroup }}
+          monitoredTopic: ${{ parameters.monitoredTopic }}
+          # Extract the actual topic name from the kafka.io/topic-name annotation
+          kafkaTopicName: ${{ steps.parseTopicEntity.output.entity.metadata.annotations['kafka.io/topic-name'] }}
+          aiModel: ${{ parameters.aiModel }}
+          analysisPrompt: ${{ parameters.analysisPrompt }}
+
+    - id: publish
+      name: Publish to Repository
+      action: publish:gitlab
+      input:
+        description: 'AI Agent for monitoring Kafka message routing failures'
+        repoUrl: ${{ parameters.repoUrl }}
+        defaultBranch: main
+
+    - id: register
+      name: Register in Catalog
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml'
+
+    - id: create-argocd-resources
+      name: Create ArgoCD Resources
+      action: argocd:create-resources
+      input:
+        appName: ${{ parameters.component_id }}-bootstrap
+        argoInstance: main
+        namespace: janus-argocd
+        repoUrl: https://${{ parameters.repo.host }}/${{ parameters.repo.owner }}/${{ parameters.component_id }}.git
+        path: 'manifests/argocd/'
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }} 

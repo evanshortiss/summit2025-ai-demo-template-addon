@@ -1,0 +1,92 @@
+# Default values for langchain-agent.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+namespace:
+  enabled: true
+  argocd:
+    name: default
+
+replicaCount: 1
+
+image:
+  pullPolicy: Always
+  registry: ${{values.image_registry}}
+  host: ${{values.image_host}}
+  organization: ${{values.image_organization}}
+  name: ${{values.image_name}}
+  # Overrides the image tag whose default is the chart appVersion.
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 8080
+
+route:
+  host: ""
+  path: /
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Application specific configuration
+app:
+  name: langchain-agent
+  
+# Environment variables for the application
+env:
+  - name: LOG_LEVEL
+    value: "INFO"
+  - name: SERVICE_NAME
+    value: "${{values.name}}"
+  - name: AI_MODEL
+    value: "${{values.aiModel}}"
+  - name: KAFKA_BROKER_LIST
+    value: "kafka:9092"
+  - name: CONSUMER_GROUP
+    value: "${{values.consumerGroup}}"
+  - name: MONITORED_TOPIC
+    value: "${{values.kafkaTopicName}}"
