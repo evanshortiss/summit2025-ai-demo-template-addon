@@ -59,7 +59,7 @@ spec:
           ui:field: RepoUrlPicker
           ui:options:
             allowedHosts:
-              - gitlab.com
+              - gitlab-gitlab.apps.cluster-c8xh2.c8xh2.sandbox2989.opentlc.com
 
     - title: Kafka Configuration
       required:
