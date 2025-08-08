@@ -1,47 +1,12 @@
 {{/*
-Expand the name of the chart.
+Image Url image will be pushed to defaults to internal registry
 */}}
-{{- define "langchain-agent-build.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
-{{- end }}
-
-{{/*
-Create a default fully qualified app name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-If release name contains chart name it will be used as a full name.
-*/}}
-{{- define "langchain-agent-build.fullname" -}}
-{{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- define "image.dev-url" -}}
+{{- with .Values.image }}
+{{- if eq .registry "Quay" }}
+{{- printf "%s/%s/%s" .host .organization .name }}
 {{- else }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- printf "%s/%s-dev/%s" .host .name .name }}
 {{- end }}
 {{- end }}
-
-{{/*
-Create chart name and version as used by the chart label.
-*/}}
-{{- define "langchain-agent-build.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
-{{- end }}
-
-{{/*
-Common labels
-*/}}
-{{- define "langchain-agent-build.labels" -}}
-backstage.io/kubernetes-id: {{ .Values.app.name }}
-helm.sh/chart: {{ include "langchain-agent-build.chart" . }}
-{{ include "langchain-agent-build.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-
-{{/*
-Selector labels
-*/}}
-{{- define "langchain-agent-build.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "langchain-agent-build.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}

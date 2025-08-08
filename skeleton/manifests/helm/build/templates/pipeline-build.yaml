@@ -6,7 +6,6 @@ metadata:
   labels:
     type: pipeline
     backstage.io/kubernetes-id: {{ .Values.app.name }}
-    {{- include "langchain-agent-build.labels" . | nindent 4 }}
 spec:
   params:
     - name: source-repo
@@ -48,6 +47,8 @@ spec:
       workspaces:
       - name: source
         workspace: source-folder
+      - name: dockerconfig
+        workspace: docker-config
     - name: update-deployment
       params:
       - name: COMPONENT_ID

@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: {{ .Values.app.name }}-update-deployment
   labels:
-    {{- include "langchain-agent-build.labels" . | nindent 4 }}
+    backstage.io/kubernetes-id: {{ .Values.app.name }}
 spec:
   description: Update the deployment with the new image
   params:

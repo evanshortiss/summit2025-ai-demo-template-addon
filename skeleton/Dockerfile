@@ -1,4 +1,4 @@
-FROM registry.redhat.io/ubi9/python-39@sha256:2ad08a50ddfa773d508f225a101395c271f315af88dba8ad2203f2fe22683e40
+FROM registry.access.redhat.com/ubi8/python-39@sha256:49118ed4ee77feab76867aa49cbadbedc02cfee9a6fdca70caf7f3a05b64b897
 
 LABEL maintainer="${{ values.owner }}"
 LABEL description="${{ values.description }}"

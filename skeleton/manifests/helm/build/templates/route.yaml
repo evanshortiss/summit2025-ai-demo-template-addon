@@ -4,7 +4,7 @@ apiVersion: route.openshift.io/v1
 metadata:
   name: webhook-{{ .Values.app.name }}-el
   labels:
-    {{- include "langchain-agent-build.labels" . | nindent 4 }}
+    backstage.io/kubernetes-id: {{ .Values.app.name }}
     app.kubernetes.io/managed-by: EventListener
     app.kubernetes.io/part-of: Triggers
     eventlistener: {{ .Values.app.name }}-el
