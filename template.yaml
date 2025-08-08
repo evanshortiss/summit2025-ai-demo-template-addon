@@ -139,7 +139,7 @@ spec:
           host: gitlab-gitlab.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com
           owner: ${{ user.entity.metadata.name }}
           destination: https://gitlab-gitlab.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com/${{ user.entity.metadata.name }}/${{ parameters.name }}
-          quay_destination: ${{ parameters.repo.quay_destination }}
+          quay_destination: quayadmin/${{ parameters.name }}
           name: ${{ parameters.name }}
           description: ${{ parameters.description }}
           system: ${{ parameters.system }}
