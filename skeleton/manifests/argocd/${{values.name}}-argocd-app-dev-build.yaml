@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: langchain-agent-dev-build
+  name: ${{ values.name }}-dev-build
   namespace: janus-argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -16,7 +16,7 @@ spec:
     path: ./manifests/helm/build
   destination:
     server: https://kubernetes.default.svc
-    namespace: langchain-agent-dev
+    namespace: ${{ values.name }}-dev
   ignoreDifferences:
     - group: '*'
       jqPathExpressions:
