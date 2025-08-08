@@ -19,10 +19,10 @@ metadata:
     gitlab.com/project-slug: ${{values.destination}}
     quay.io/repository-slug: ${{values.quay_destination | dump}}
   links:
-    - url: https://devspaces${{values.cluster}}/#https://${{values.host}}/${{values.destination}}
+    - url: https://devspaces.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com/#https://${{values.host}}/${{values.destination}}
       title: OpenShift Dev Spaces (VS Code)
       icon: web
-    - url: https://devspaces${{values.cluster}}/#https://${{values.host}}/${{values.destination}}?che-editor=che-incubator/che-idea/latest
+    - url: https://devspacesapps.cluster-ntncs.ntncs.sandbox235.opentlc.com/#https://${{values.host}}/${{values.destination}}?che-editor=che-incubator/che-idea/latest
       title: OpenShift Dev Spaces (JetBrains IntelliJ)
       icon: web
 spec:
