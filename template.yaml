@@ -79,7 +79,8 @@ spec:
           description: Select a Kafka topic to monitor for failed routing messages
           ui:field: EntityPicker
           ui:options:
-            allowArbitraryValues: false
+            # TODO remove
+            allowArbitraryValues: true
             allowMultiple: false
             catalogFilter:
               - kind: Resource
@@ -96,6 +97,8 @@ spec:
           description: AI model resource to use for analysis
           ui:field: EntityPicker
           ui:options:
+            # TODO remove
+            allowArbitraryValues: true
             catalogFilter:
               kind: Resource
               spec.type: ai-model
