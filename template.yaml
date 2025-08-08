@@ -157,6 +157,7 @@ spec:
         description: 'AI Agent for monitoring Kafka message routing failures'
         repoUrl: gitlab-gitlab.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com?owner=development&repo=${{ parameters.name }}
         defaultBranch: main
+        repoVisibility: public
 
     - id: register
       name: Register in Catalog
