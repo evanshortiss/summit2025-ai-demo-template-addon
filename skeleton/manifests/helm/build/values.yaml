@@ -1,20 +1,20 @@
-# Default values for langchain-agent-build.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
 app:
   name: ${{values.name}}
+  namespace: ${{values.name}}-dev
+  cluster: ${{ values.cluster }}
 
 git:
-  repo: https://${{values.host}}/${{values.owner}}/${{values.name}}.git
   branch: main
+  repo: https://${{values.host}}/${{values.destination}}.git
+  org: ${{values.owner}}
+  name: ${{values.name}}
+  host: ${{values.host}}
+  token: ''
+  webhookSecret: ''
 
 image:
-  registry: ${{values.image_host}}
+  registry: ${{values.image_registry}}
   organization: ${{values.image_organization}}
+  host: ${{values.image_host}}
   name: ${{values.name}}
   tag: latest
-
-# Pipeline configuration
-pipeline:
-  name: ${{values.name}}-build

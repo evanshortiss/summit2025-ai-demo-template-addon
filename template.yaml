@@ -139,8 +139,11 @@ spec:
           host: gitlab-gitlab.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com
           owner: development
           destination: ${{ parameters.name }}
+          cluster: .apps.cluster-ntncs.ntncs.sandbox235.opentlc.com
+          image_registry: Quay
           image_organization: quayadmin
           image_host: quay-ntncs.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com
+          image_name: ${{ parameters.name }}
           quay_destination: quayadmin/${{ parameters.name }}
           name: ${{ parameters.name }}
           description: ${{ parameters.description }}

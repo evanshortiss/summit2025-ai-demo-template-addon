@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: update-deployment
+  name: {{ .Values.app.name }}-update-deployment
   labels:
     {{- include "langchain-agent-build.labels" . | nindent 4 }}
 spec:

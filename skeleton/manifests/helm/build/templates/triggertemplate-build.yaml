@@ -9,17 +9,21 @@ spec:
   params:
     - name: git-revision
       description: The git revision
-      default: main
+      default: {{ .Values.git.branch }}
     - name: git-repo-url
       description: The repo url
     - name: output-image
       description: reference of the image that will get created
-      default: {{ include "image.dev-url" . }}
+      default: {{ .Values.image.host }}/{{ .Values.image.organization }}/{{ .Values.image.name }}
+    - name: git-committer
+      description: Email of user who committed the change
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        name: {{ .Values.app.name }}-pipeline-$(uid)
+        generateName: {{ .Values.app.name }}-pipeline-
+        labels:
+          backstage.io/kubernetes-id: {{ .Values.app.name }}
       spec:
         params:
           - name: source-repo

@@ -45,10 +45,3 @@ Selector labels
 app.kubernetes.io/name: {{ include "langchain-agent-build.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
-
-{{/*
-Create the image reference for dev environment
-*/}}
-{{- define "image.dev-url" -}}
-{{- printf "%s/%s/%s" .Values.image.registry .Values.image.organization .Values.image.name -}}
-{{- end }}

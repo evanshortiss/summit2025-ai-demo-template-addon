@@ -8,8 +8,8 @@ metadata:
 spec:
   params:
     - name: git-repo-url
-      value: $(body.repository.clone_url)
+      value: $(body.repository.git_http_url)
     - name: git-revision
       value: $(body.after)
-    - name: git-repo-name
-      value: $(body.repository.name)
+    - name: git-committer
+      value: $(body.user_email)

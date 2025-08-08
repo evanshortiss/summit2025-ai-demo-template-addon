@@ -13,15 +13,13 @@ spec:
           ref: {{ .Values.app.name }}-commit
       interceptors:
         - params:
-            - name: eventTypes
-              value: ['push']
+            - name: filter
+              value: has(body.commits) && body.object_kind == 'push'
+            - name: overlays
+              value: null
           ref:
-            name: github
-        - params:
-            - name: git-revision
-              value: >-
-                (body.ref.contains('main'))
-          ref:
+            kind: ClusterInterceptor
             name: cel
+      name: commit-trig
       template:
         ref: {{ .Values.app.name }}-run-pipeline

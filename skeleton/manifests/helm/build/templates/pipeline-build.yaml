@@ -6,6 +6,7 @@ metadata:
   labels:
     type: pipeline
     backstage.io/kubernetes-id: {{ .Values.app.name }}
+    {{- include "langchain-agent-build.labels" . | nindent 4 }}
 spec:
   params:
     - name: source-repo
@@ -18,7 +19,7 @@ spec:
       type: string
     - name: output-image
       description: reference of the image that will get created
-      default: {{ include "image.dev-url" . }}
+      default: {{ .Values.image.host }}/{{ .Values.image.organization }}/{{ .Values.image.name }}
       type: string
   tasks:
     - name: git-clone
@@ -36,7 +37,9 @@ spec:
     - name: build-image
       params:
       - name: IMAGE
-        value: $(params.output-image)
+        value: $(params.output-image):latest
+      - name: DOCKERFILE
+        value: ./Dockerfile
       runAfter:
       - git-clone
       taskRef:
@@ -50,12 +53,12 @@ spec:
       - name: COMPONENT_ID
         value: {{ .Values.app.name }}
       - name: IMAGE
-        value: $(params.output-image)@$(tasks.build-image.results.IMAGE_DIGEST)
+        value: $(params.output-image):latest
       runAfter:
       - build-image
       taskRef:
         kind: Task
-        name: update-deployment
+        name: {{ .Values.app.name }}-update-deployment
   results:
     - name: IMAGE_URL
       value: "$(tasks.build-image.results.IMAGE_URL)"
