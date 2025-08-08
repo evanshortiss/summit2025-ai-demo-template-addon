@@ -58,7 +58,7 @@ spec:
         #   ui:field: RepoUrlPicker
         #   ui:options:
         #     allowedHosts:
-        #       - gitlab-gitlab.apps.cluster-c8xh2.c8xh2.sandbox2989.opentlc.com
+        #       - gitlab-gitlab.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com
 
     - title: Kafka Configuration
       required:
@@ -136,9 +136,9 @@ spec:
       input:
         url: ./skeleton
         values:
-          host: gitlab-gitlab.apps.cluster-c8xh2.c8xh2.sandbox2989.opentlc.com
+          host: gitlab-gitlab.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com
           owner: ${{ user.entity.metadata.name }}
-          destination: https://gitlab-gitlab.apps.cluster-c8xh2.c8xh2.sandbox2989.opentlc.com/${{ user.entity.metadata.name }}/${{ parameters.name }}
+          destination: https://gitlab-gitlab.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com/${{ user.entity.metadata.name }}/${{ parameters.name }}
           quay_destination: ${{ parameters.repo.quay_destination }}
           name: ${{ parameters.name }}
           description: ${{ parameters.description }}
@@ -155,7 +155,7 @@ spec:
       action: publish:gitlab
       input:
         description: 'AI Agent for monitoring Kafka message routing failures'
-        repoUrl: gitlab-gitlab.apps.cluster-c8xh2.c8xh2.sandbox2989.opentlc.com?owner=${{ user.entity.metadata.name }}&repo=${{ parameters.name }}
+        repoUrl: gitlab-gitlab.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com?owner=${{ user.entity.metadata.name }}&repo=${{ parameters.name }}
         defaultBranch: main
 
     - id: register
@@ -172,7 +172,7 @@ spec:
         appName: ${{ parameters.name }}-bootstrap
         argoInstance: main
         namespace: janus-argocd
-        repoUrl: https://gitlab-gitlab.apps.cluster-c8xh2.c8xh2.sandbox2989.opentlc.com/${{ user.entity.metadata.name }}/${{ parameters.name }}.git
+        repoUrl: https://gitlab-gitlab.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com/${{ user.entity.metadata.name }}/${{ parameters.name }}.git
         path: 'manifests/argocd/'
 
   output:
