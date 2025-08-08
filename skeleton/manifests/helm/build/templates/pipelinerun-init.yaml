@@ -1,0 +1,35 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: {{ .Values.app.name }}-pipeline-run-init
+  labels:
+    {{- include "langchain-agent-build.labels" . | nindent 4 }}
+    tekton.dev/pipeline: {{ .Values.app.name }}-build
+    type: pipeline
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  params:
+    - name: source-repo
+      value: {{ .Values.git.repo }}
+    - name: source-branch
+      value: {{ .Values.git.branch }}
+    - name: output-image
+      value: {{ include "image.dev-url" . }}
+  pipelineRef:
+    name: {{ .Values.app.name }}-build
+  serviceAccountName: pipeline
+  workspaces:
+    - name: source-folder
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
+    - name: docker-config
+      secret:
+        secretName: {{ .Values.app.name }}-registry-creds

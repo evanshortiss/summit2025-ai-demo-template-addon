@@ -26,6 +26,9 @@ share/python-wheels/
 *.egg
 MANIFEST
 
+# Ensure Helm build directory is not ignored
+!manifests/helm/build/
+
 # PyInstaller
 *.manifest
 *.spec
