@@ -52,14 +52,14 @@ spec:
           ui:options:
             catalogFilter:
               kind: System
-        repoUrl:
-          title: Repository Location
-          type: string
-          description: Choose a location for the repository
-          ui:field: RepoUrlPicker
-          ui:options:
-            allowedHosts:
-              - gitlab-gitlab.apps.cluster-c8xh2.c8xh2.sandbox2989.opentlc.com
+        # repoUrl:
+        #   title: Repository Location
+        #   type: string
+        #   description: Choose a location for the repository
+        #   ui:field: RepoUrlPicker
+        #   ui:options:
+        #     allowedHosts:
+        #       - gitlab-gitlab.apps.cluster-c8xh2.c8xh2.sandbox2989.opentlc.com
 
     - title: Kafka Configuration
       required:
@@ -156,7 +156,7 @@ spec:
       action: publish:gitlab
       input:
         description: 'AI Agent for monitoring Kafka message routing failures'
-        repoUrl: ${{ parameters.repoUrl }}
+        repoUrl: gitlab-gitlab.apps.cluster-c8xh2.c8xh2.sandbox2989.opentlc.com?owner=${{ user.entity.metadata.name }}&repo=${{ parameters.name }}
         defaultBranch: main
 
     - id: register
@@ -170,10 +170,10 @@ spec:
       name: Create ArgoCD Resources
       action: argocd:create-resources
       input:
-        appName: ${{ parameters.component_id }}-bootstrap
+        appName: ${{ parameters.name }}-bootstrap
         argoInstance: main
         namespace: janus-argocd
-        repoUrl: https://${{ parameters.repo.host }}/${{ parameters.repo.owner }}/${{ parameters.component_id }}.git
+        repoUrl: https://${{ parameters.repo.host }}/${{ parameters.repo.owner }}/${{ parameters.name }}.git
         path: 'manifests/argocd/'
 
   output:
