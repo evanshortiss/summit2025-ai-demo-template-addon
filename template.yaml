@@ -21,7 +21,6 @@ spec:
         - description
         - owner
         - system
-        - repoUrl
       properties:
         name:
           title: Name
