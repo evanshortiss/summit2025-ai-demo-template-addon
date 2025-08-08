@@ -137,7 +137,7 @@ spec:
         url: ./skeleton
         values:
           host: gitlab-gitlab.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com
-          owner: ${{ user.entity.metadata.name }}
+          owner: development
           destination: ${{ parameters.name }}
           quay_destination: quayadmin/${{ parameters.name }}
           name: ${{ parameters.name }}
@@ -155,7 +155,7 @@ spec:
       action: publish:gitlab
       input:
         description: 'AI Agent for monitoring Kafka message routing failures'
-        repoUrl: gitlab-gitlab.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com?owner=${{ user.entity.metadata.name }}&repo=${{ parameters.name }}
+        repoUrl: gitlab-gitlab.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com?owner=development&repo=${{ parameters.name }}
         defaultBranch: main
 
     - id: register
@@ -172,7 +172,7 @@ spec:
         appName: ${{ parameters.name }}-bootstrap
         argoInstance: main
         namespace: janus-argocd
-        repoUrl: https://gitlab-gitlab.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com/${{ user.entity.metadata.name }}/${{ parameters.name }}.git
+        repoUrl: https://gitlab-gitlab.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com/development/${{ parameters.name }}.git
         path: 'manifests/argocd/'
 
   output:
