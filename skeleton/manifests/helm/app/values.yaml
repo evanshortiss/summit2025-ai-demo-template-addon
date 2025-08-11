@@ -101,5 +101,5 @@ env:
   - name: OPENAI_API_KEY
     valueFrom:
       secretKeyRef:
-        name: {{ .Values.app.name }}-openai-secret
+        name: ${{values.name}}-openai-secret
         key: api-key
