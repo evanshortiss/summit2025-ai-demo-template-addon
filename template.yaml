@@ -58,7 +58,7 @@ spec:
         #   ui:field: RepoUrlPicker
         #   ui:options:
         #     allowedHosts:
-        #       - gitlab-gitlab.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com
+        #       - gitlab-gitlab.apps.cluster-c8xh2.c8xh2.sandbox2989.opentlc.com
 
     - title: Kafka Configuration
       required:
@@ -136,13 +136,13 @@ spec:
       input:
         url: ./skeleton
         values:
-          host: gitlab-gitlab.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com
+          host: gitlab-gitlab.apps.cluster-c8xh2.c8xh2.sandbox2989.opentlc.com
           owner: development
           destination: ${{ parameters.name }}
-          cluster: .apps.cluster-ntncs.ntncs.sandbox235.opentlc.com
+          cluster: .apps.cluster-c8xh2.c8xh2.sandbox2989.opentlc.com
           image_registry: Quay
           image_organization: quayadmin
-          image_host: quay-ntncs.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com
+          image_host: quay-ntncs.apps.cluster-c8xh2.c8xh2.sandbox2989.opentlc.com
           image_name: ${{ parameters.name }}
           quay_destination: quayadmin/${{ parameters.name }}
           name: ${{ parameters.name }}
@@ -160,7 +160,7 @@ spec:
       action: publish:gitlab
       input:
         description: 'AI Agent for monitoring Kafka message routing failures'
-        repoUrl: gitlab-gitlab.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com?owner=development&repo=${{ parameters.name }}
+        repoUrl: gitlab-gitlab.apps.cluster-c8xh2.c8xh2.sandbox2989.opentlc.com?owner=development&repo=${{ parameters.name }}
         defaultBranch: main
         repoVisibility: public
 
@@ -178,7 +178,7 @@ spec:
         appName: ${{ parameters.name }}-bootstrap
         argoInstance: main
         namespace: janus-argocd
-        repoUrl: https://gitlab-gitlab.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com/development/${{ parameters.name }}.git
+        repoUrl: https://gitlab-gitlab.apps.cluster-c8xh2.c8xh2.sandbox2989.opentlc.com/development/${{ parameters.name }}.git
         path: 'manifests/argocd/'
 
   output:
