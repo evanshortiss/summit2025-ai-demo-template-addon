@@ -87,7 +87,7 @@ class MessageProcessor:
                         headers=dict(message.headers) if message.headers else {}
                     )
                     
-                    logger.debug(f"Received message from {message.topic}: {message.value[:100]}...")
+                    logger.info(f"Received message from {message.topic}: {message.value}...")
                     
                     # Process the message
                     self.message_handler(kafka_msg)
