@@ -48,6 +48,10 @@ class MessageProcessor:
             'auto_commit_interval_ms': 1000,
             'value_deserializer': lambda m: m.decode('utf-8') if m else None,
             'key_deserializer': lambda m: m.decode('utf-8') if m else None,
+            'security_protocol': settings.kafka_security_protocol,
+            'sasl_mechanism': settings.kafka_sasl_mechanism,
+            'sasl_plain_username': settings.kafka_sasl_username,
+            'sasl_plain_password': settings.kafka_sasl_password,
         }
         
         logger.info(f"Creating Kafka consumer with config: {consumer_config}")

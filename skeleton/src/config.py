@@ -18,9 +18,25 @@ class Settings(BaseSettings):
     log_level: str = Field(default="INFO", description="Logging level")
     
     # Kafka Configuration
-    kafka_brokers: str = Field(
+    kafka_broker: str = Field(
         default="kafka-kafka-bootstrap.kafka.svc.cluster.local:9092", 
-        description="Comma-separated Kafka broker addresses"
+        description="Kafka broker address"
+    )
+    kafka_security_protocol: str = Field(
+        default="SASL_SSL",
+        description="Kafka security protocol"
+    )
+    kafka_sasl_mechanism: str = Field(
+        default="SCRAM-SHA-512",
+        description="Kafka SASL mechanism"
+    )
+    kafka_sasl_username: str = Field(
+        default="parasol",
+        description="Kafka SASL username"
+    )
+    kafka_sasl_password: str = Field(
+        default="parasol",
+        description="Kafka SASL password"
     )
     consumer_group: str = Field(
         default="${{ values.consumerGroup }}", 
@@ -87,8 +103,8 @@ Provide a brief analysis and suggested resolution.{% endif %}""",
 
     @property
     def kafka_broker_list(self) -> List[str]:
-        """Parse Kafka brokers into a list."""
-        return [broker.strip() for broker in self.kafka_brokers.split(",")]
+        """Return Kafka broker as a list for compatibility."""
+        return [self.kafka_broker]
 
 
 # Global settings instance

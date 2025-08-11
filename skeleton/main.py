@@ -82,7 +82,8 @@ class AIAgentService:
             self.running = True
             
             logger.info("Starting AI Agent service", 
-                       kafka_brokers=settings.kafka_broker_list,
+                       kafka_broker=settings.kafka_broker,
+                       security_protocol=settings.kafka_security_protocol,
                        consumer_group=settings.consumer_group)
             
             # Start the web server for health checks
@@ -127,7 +128,9 @@ class AIAgentService:
             "version": "1.0.0",
             "ai_agent": agent_status,
             "kafka": {
-                "brokers": settings.kafka_broker_list,
+                "broker": settings.kafka_broker,
+                "security_protocol": settings.kafka_security_protocol,
+                "sasl_mechanism": settings.kafka_sasl_mechanism,
                 "consumer_group": settings.consumer_group,
                 "monitored_topic": settings.monitored_topic
             }

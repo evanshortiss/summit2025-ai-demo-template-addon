@@ -84,9 +84,22 @@ env:
     value: "${{values.name}}"
   - name: AI_MODEL
     value: "${{values.aiModel}}"
-  - name: KAFKA_BROKER_LIST
-    value: "kafka:9092"
+  - name: KAFKA_BROKER
+    value: "kafka-kafka-bootstrap.kafka.svc.cluster.local:9092"
+  - name: KAFKA_SECURITY_PROTOCOL
+    value: "SASL_SSL"
+  - name: KAFKA_SASL_MECHANISM
+    value: "SCRAM-SHA-512"
+  - name: KAFKA_SASL_USERNAME
+    value: "parasol"
+  - name: KAFKA_SASL_PASSWORD
+    value: "parasol"
   - name: CONSUMER_GROUP
     value: "${{values.consumerGroup}}"
   - name: MONITORED_TOPIC
     value: "${{values.kafkaTopicName}}"
+  - name: OPENAI_API_KEY
+    valueFrom:
+      secretKeyRef:
+        name: {{ .Values.app.name }}-openai-secret
+        key: api-key
