@@ -87,7 +87,7 @@ env:
   - name: KAFKA_BROKER
     value: "kafka-kafka-bootstrap.kafka.svc.cluster.local:9092"
   - name: KAFKA_SECURITY_PROTOCOL
-    value: "SASL_SSL"
+    value: "SASL_PLAINTEXT"
   - name: KAFKA_SASL_MECHANISM
     value: "SCRAM-SHA-512"
   - name: KAFKA_SASL_USERNAME

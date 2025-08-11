@@ -15,7 +15,7 @@ class Settings(BaseSettings):
         default="${{ values.description }}", 
         description="Service description"
     )
-    log_level: str = Field(default="INFO", description="Logging level")
+    log_level: str = Field(default="DEBUG", description="Logging level")
     
     # Kafka Configuration
     kafka_broker: str = Field(
