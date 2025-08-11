@@ -74,7 +74,7 @@ affinity: {}
 
 # Application specific configuration
 app:
-  name: langchain-agent
+  name: ${{values.name}}
   
 # Environment variables for the application
 env:
