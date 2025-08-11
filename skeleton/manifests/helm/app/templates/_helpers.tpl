@@ -29,11 +29,11 @@ Create chart name and version as used by the chart label.
 Common labels
 */}}
 {{- define "backstage.labels" -}}
-backstage.io/kubernetes-id: ${{values.component_id}}
+backstage.io/kubernetes-id: ${{values.name}}
 {{- end }}
 
 {{- define "langchain-agent.labels" -}}
-backstage.io/kubernetes-id: ${{values.component_id}}
+backstage.io/kubernetes-id: ${{values.name}}
 helm.sh/chart: {{ include "langchain-agent.chart" . }}
 app.openshift.io/runtime: python
 {{ include "langchain-agent.selectorLabels" . }}
