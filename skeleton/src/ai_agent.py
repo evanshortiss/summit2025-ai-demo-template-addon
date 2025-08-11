@@ -4,7 +4,7 @@ import json
 import logging
 from typing import Dict, Any, List
 from langchain.agents import AgentType, initialize_agent
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.memory import ConversationBufferWindowMemory
 from langchain.schema import HumanMessage, SystemMessage
 from langchain.tools import Tool
@@ -63,7 +63,7 @@ class MessageAnalysisAgent:
         return initialize_agent(
             tools=self.tools,
             llm=self.llm,
-            agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
+            agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
             memory=self.memory,
             verbose=True,
             handle_parsing_errors=True,
@@ -121,12 +121,13 @@ class MessageAnalysisAgent:
             # Send a fallback notification
             try:
                 notification_tool = create_backstage_notification_tool()
-                notification_tool.run(
-                    title="AI Agent Error",
-                    message=f"Failed to analyze unknown message: {str(e)}\n\nMessage: {message_content[:200]}...",
-                    severity="high",
-                    metadata=metadata
-                )
+                notification_data = json.dumps({
+                    "title": "AI Agent Error",
+                    "message": f"Failed to analyze unknown message: {str(e)}\n\nMessage: {message_content[:200]}...",
+                    "severity": "high",
+                    "metadata": metadata
+                })
+                notification_tool.run(notification_data)
             except Exception as notification_error:
                 logger.error(f"Failed to send fallback notification: {notification_error}")
     

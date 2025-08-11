@@ -15,19 +15,8 @@ logger = logging.getLogger(__name__)
 class NotificationInput(BaseModel):
     """Input schema for the Backstage notification tool."""
     
-    title: str = Field(description="Title of the notification")
-    message: str = Field(description="Body/content of the notification")
-    severity: str = Field(
-        default="normal",
-        description="Severity level: low, normal, high, critical"
-    )
-    topic: str = Field(
-        default="ai-agent-alerts",
-        description="Notification topic/channel"
-    )
-    metadata: Optional[Dict[str, Any]] = Field(
-        default=None,
-        description="Additional metadata for the notification"
+    notification_data: str = Field(
+        description="JSON string containing title, message, severity, and optional metadata"
     )
 
 
@@ -37,20 +26,28 @@ class BackstageNotificationTool(BaseTool):
     name: str = "backstage_notification"
     description: str = (
         "Send notifications to Backstage when message routing failures are detected. "
-        "Use this tool to alert teams about issues that need attention."
+        "Input should be a JSON string with keys: title, message, severity (optional), "
+        "topic (optional), and metadata (optional). Example: "
+        '{"title": "Alert", "message": "Issue found", "severity": "high"}'
     )
-    args_schema = NotificationInput
+    args_schema: type[BaseModel] = NotificationInput
     
-    def _run(
-        self,
-        title: str,
-        message: str,
-        severity: str = "normal",
-        topic: str = "ai-agent-alerts",
-        metadata: Optional[Dict[str, Any]] = None
-    ) -> str:
+    def _run(self, notification_data: str) -> str:
         """Send a notification to Backstage."""
         try:
+            # Parse the JSON input
+            try:
+                data = json.loads(notification_data)
+            except json.JSONDecodeError:
+                return f"Error: Invalid JSON format in notification_data: {notification_data}"
+            
+            # Extract required fields with defaults
+            title = data.get("title", "AI Agent Notification")
+            message = data.get("message", "")
+            severity = data.get("severity", "normal")
+            topic = data.get("topic", "ai-agent-alerts")
+            metadata = data.get("metadata", {})
+            
             notification_payload = {
                 "title": title,
                 "message": message,
@@ -58,7 +55,7 @@ class BackstageNotificationTool(BaseTool):
                 "topic": topic,
                 "source": settings.service_name,
                 "timestamp": None,  # Will be set by the API
-                "metadata": metadata or {}
+                "metadata": metadata
             }
             
             headers = {
@@ -96,18 +93,11 @@ class BackstageNotificationTool(BaseTool):
             logger.error(error_msg)
             return f"Error: {error_msg}"
     
-    async def _arun(
-        self,
-        title: str,
-        message: str,
-        severity: str = "normal",
-        topic: str = "ai-agent-alerts",
-        metadata: Optional[Dict[str, Any]] = None
-    ) -> str:
+    async def _arun(self, notification_data: str) -> str:
         """Async version of the notification tool."""
         # For now, we'll use the sync version
         # In production, consider using aiohttp for async requests
-        return self._run(title, message, severity, topic, metadata)
+        return self._run(notification_data)
 
 
 def create_backstage_notification_tool() -> BackstageNotificationTool:
