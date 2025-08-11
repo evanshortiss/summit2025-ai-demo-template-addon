@@ -1,18 +1,18 @@
 # AI and LangChain
-langchain==0.1.0
-langchain-openai==0.0.5
-openai==1.10.0
+langchain==0.3.27
+langchain-openai==0.3.29
+openai==1.99.6
 
 # Kafka
-kafka-python==2.0.2
-confluent-kafka==2.3.0
+kafka-python==2.2.15
+confluent-kafka==2.11.0
 
 # HTTP requests for Backstage API
 requests==2.31.0
 httpx==0.26.0
 
 # Configuration and environment
-python-dotenv==1.0.0
+python-dotenv==1.1.1
 pydantic==2.5.0
 pydantic-settings==2.1.0
 
