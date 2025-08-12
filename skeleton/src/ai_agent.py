@@ -31,7 +31,8 @@ class MessageAnalysisAgent:
             model_name=settings.ai_model,
             temperature=settings.ai_temperature,
             max_tokens=settings.ai_max_tokens,
-            openai_api_key=settings.openai_api_key
+            openai_api_key=settings.openai_api_key,
+            openai_api_base=settings.inference_server_url
         )
     
     def _create_tools(self) -> List[Tool]:
@@ -135,6 +136,7 @@ class MessageAnalysisAgent:
         """Get the current status of the agent."""
         return {
             "model": settings.ai_model,
+            "inference_server_url": settings.inference_server_url,
             "temperature": settings.ai_temperature,
             "max_tokens": settings.ai_max_tokens,
             "tools_count": len(self.tools),

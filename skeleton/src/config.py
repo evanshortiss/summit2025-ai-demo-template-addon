@@ -60,6 +60,10 @@ class Settings(BaseSettings):
         default="${{ values.aiModel }}", 
         description="AI model resource to use"
     )
+    inference_server_url: str = Field(
+        default="${{ values.inferenceServerUrl }}", 
+        description="Inference server URL for the AI model"
+    )
     analysis_prompt_template: str = Field(
         default="""{%- if values.analysisPrompt %}{{ values.analysisPrompt | replace('\n', '\\n') }}{% else %}You are an expert system analyst reviewing a message that failed to be routed properly.
 
