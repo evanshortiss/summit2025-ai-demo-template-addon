@@ -16,8 +16,8 @@ metadata:
     backstage.io/kubernetes-id: ${{values.name}}
     janus-idp.io/tekton: ${{values.name}}
     backstage.io/source-location: url:https://${{values.host}}/${{values.destination}}
-    gitlab.com/project-slug: ${{values.destination}}
-    quay.io/repository-slug: ${{values.quay_destination | dump}}
+    gitlab.com/project-slug: ${{values.owner}}/${{values.destination}}
+    quay.io/repository-slug: ${{values.quay_destination}}
   links:
     - url: https://devspaces.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com/#https://${{values.host}}/${{values.destination}}
       title: OpenShift Dev Spaces (VS Code)
