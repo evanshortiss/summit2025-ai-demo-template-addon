@@ -131,6 +131,12 @@ spec:
       input:
         entityRef: ${{ parameters.monitoredTopic }}
 
+    - id: parseAiModelEntity
+      name: Parse AI Model Entity Reference
+      action: catalog:fetch
+      input:
+        entityRef: ${{ parameters.aiModel }}
+
     - id: fetch
       name: Fetch Template
       action: fetch:template
@@ -155,6 +161,7 @@ spec:
           kafkaTopicName: ${{ steps.parseTopicEntity.output.entity.metadata.annotations['kafka.io/topic-name'] }}
           aiModel: ${{ parameters.aiModel }}
           analysisPrompt: ${{ parameters.analysisPrompt }}
+          inferenceServerUrl: ${{ steps.parseAiModelEntity.output.entity.metadata.links[0].url }}
 
     - id: publish
       name: Publish to Repository
