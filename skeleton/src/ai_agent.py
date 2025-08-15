@@ -6,11 +6,10 @@ from typing import Dict, Any, List
 from langchain.agents import AgentType, initialize_agent
 from langchain_openai import ChatOpenAI
 from langchain.memory import ConversationBufferWindowMemory
-from langchain.schema import HumanMessage, SystemMessage
-from langchain.tools import Tool
 
 from .config import settings
-from .tools.backstage_notification import create_backstage_notification_tool
+from .tools.backstage_catalog import create_backstage_catalog_tool
+from .tools.backstage_notification_tool import create_backstage_notification_tool
 
 logger = logging.getLogger(__name__)
 
@@ -35,19 +34,17 @@ class MessageAnalysisAgent:
             openai_api_base=settings.inference_server_url
         )
     
-    def _create_tools(self) -> List[Tool]:
+    def _create_tools(self) -> List:
         """Create the tools available to the agent."""
-        tools = [
-            create_backstage_notification_tool(),
-        ]
+        tools = []
         
-        # Add a custom analysis tool
-        analysis_tool = Tool(
-            name="message_analysis",
-            description="Analyze a failed message to determine the cause of routing failure",
-            func=self._analyze_message_content
-        )
-        tools.append(analysis_tool)
+        # Add Backstage Catalog tool for group lookups
+        catalog_tool = create_backstage_catalog_tool()
+        tools.append(catalog_tool)
+        
+        # Add Backstage Notification tool
+        notification_tool = create_backstage_notification_tool()
+        tools.append(notification_tool)
         
         return tools
     
@@ -68,22 +65,8 @@ class MessageAnalysisAgent:
             memory=self.memory,
             verbose=True,
             handle_parsing_errors=True,
-            max_iterations=3
+            max_iterations=5  # Increased to allow for tool usage
         )
-    
-    def _analyze_message_content(self, message: str) -> str:
-        """Analyze message content to determine routing failure cause."""
-        try:
-            # Use the configured prompt template
-            analysis_prompt = settings.analysis_prompt_template.format(message=message)
-            
-            response = self.llm.invoke([HumanMessage(content=analysis_prompt)])
-            
-            return response.content
-            
-        except Exception as e:
-            logger.error(f"Error analyzing message: {e}")
-            return f"Analysis failed: {str(e)}"
     
     def process_unknown_message(self, message_content: str, metadata: Dict[str, Any]) -> None:
         """Process a message from the unknown topic."""
@@ -91,44 +74,62 @@ class MessageAnalysisAgent:
             logger.info(f"Processing unknown message: {message_content[:100]}...")
             
             # Create a comprehensive prompt for the agent
-            prompt = f"""
-            A message has been routed to the 'unknown' topic, indicating a classification failure.
+            analysis_prompt = f"""
+You are an expert system analyst reviewing a message that failed to be routed properly. A message has been sent to the 'unknown' topic, indicating a classification failure.
+
+**Message Content:**
+{message_content}
+
+**Message Metadata:**
+- Topic: {metadata.get('topic')}
+- Partition: {metadata.get('partition')}
+- Offset: {metadata.get('offset')}
+- Timestamp: {metadata.get('timestamp')}
+- Headers: {metadata.get('headers', {{}})}
+
+**Your Task:**
+1. Analyze this message to determine why it failed to be classified
+2. Use the analysis prompt template: {settings.analysis_prompt_template.format(message=message_content)}
+3. If helpful for your analysis, look up relevant teams or groups in the Backstage Catalog to understand organizational structure
+4. Provide a detailed explanation of the likely cause and specific recommendations
+5. **IMPORTANT: Send a notification to Backstage** with your analysis results using the notification tool
+
+**Available Tools:**
+- `backstage_catalog_groups`: Look up Groups in the Backstage Catalog to understand team structures and ownership
+- `send_backstage_notification`: Send a notification to Backstage with your analysis findings (YOU MUST USE THIS)
+
+Please complete your analysis and send a notification to the relevant group with your findings.
+"""
             
-            Message Content: {message_content}
+            # Use the agent to analyze the message and send notification
+            result = self.agent.run(analysis_prompt)
             
-            Metadata:
-            - Topic: {metadata.get('topic')}
-            - Partition: {metadata.get('partition')}
-            - Offset: {metadata.get('offset')}
-            - Timestamp: {metadata.get('timestamp')}
-            - Headers: {json.dumps(metadata.get('headers', {}), indent=2)}
-            
-            Please:
-            1. Analyze this message to determine why it failed to be classified
-            2. Provide a detailed explanation of the likely cause
-            3. Send a notification to Backstage with your findings and recommendations
-            
-            Use the available tools to complete this analysis and notification.
-            """
-            
-            # Run the agent
-            result = self.agent.run(prompt)
-            
-            logger.info(f"Agent analysis completed: {result}")
+            logger.info(f"Agent completed analysis and notification: {result}")
             
         except Exception as e:
             logger.error(f"Error processing unknown message: {e}", exc_info=True)
             
-            # Send a fallback notification
+            # Send a fallback notification directly if agent fails completely
             try:
-                notification_tool = create_backstage_notification_tool()
-                notification_data = json.dumps({
-                    "title": "AI Agent Error",
-                    "message": f"Failed to analyze unknown message: {str(e)}\n\nMessage: {message_content[:200]}...",
-                    "severity": "high",
-                    "metadata": metadata
-                })
-                notification_tool.run(notification_data)
+                from .tools.backstage_notification import send_backstage_notification
+                title = "AI Agent Error"
+                description = f"""The AI agent encountered an error while analyzing a failed message:
+
+**Error:** {str(e)}
+
+**Original Message:** 
+{message_content[:200]}{'...' if len(message_content) > 200 else ''}
+
+**Metadata:**
+- Topic: {metadata.get('topic')}
+- Partition: {metadata.get('partition')}
+- Offset: {metadata.get('offset')}
+- Timestamp: {metadata.get('timestamp')}
+
+Please investigate this message routing failure manually."""
+                
+                send_backstage_notification(title, description)
+                logger.info("Sent fallback notification due to agent error")
             except Exception as notification_error:
                 logger.error(f"Failed to send fallback notification: {notification_error}")
     
@@ -140,6 +141,7 @@ class MessageAnalysisAgent:
             "temperature": settings.ai_temperature,
             "max_tokens": settings.ai_max_tokens,
             "tools_count": len(self.tools),
-            "memory_messages": len(self.memory.chat_memory.messages),
-            "service_name": settings.service_name
-        } 
+            "memory_messages": len(self.memory.chat_memory.messages) if self.memory.chat_memory else 0,
+            "service_name": settings.service_name,
+            "available_tools": [tool.name for tool in self.tools]
+        }

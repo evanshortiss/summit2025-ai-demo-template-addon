@@ -100,8 +100,15 @@ env:
     value: "${{values.consumerGroup}}"
   - name: MONITORED_TOPIC
     value: "${{values.kafkaTopicName}}"
+  - name: NOTIFICATION_RECIPIENT_ENTITY
+    value: "${{values.owner}}"
   - name: OPENAI_API_KEY
     valueFrom:
       secretKeyRef:
         name: ${{values.name}}-openai-secret
         key: api-key
+  - name: BACKSTAGE_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: ${{values.name}}-backstage-secret
+        key: api-token

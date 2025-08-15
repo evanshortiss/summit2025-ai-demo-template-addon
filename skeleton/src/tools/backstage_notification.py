@@ -1,105 +1,76 @@
-"""Backstage notification tool for LangChain agents."""
+"""Backstage notification utility for sending notifications."""
 
 import json
 import logging
-from typing import Optional, Dict, Any
-from pydantic import BaseModel, Field
+from typing import Dict, Any, Optional
 import requests
-from langchain.tools import BaseTool
 
 from ..config import settings
 
 logger = logging.getLogger(__name__)
 
 
-class NotificationInput(BaseModel):
-    """Input schema for the Backstage notification tool."""
+def send_backstage_notification(title: str, description: str, entity_ref: Optional[str] = None) -> str:
+    """Send a notification to Backstage Notification API with optional entity reference.
     
-    notification_data: str = Field(
-        description="JSON string containing title, message, severity, and optional metadata"
-    )
-
-
-class BackstageNotificationTool(BaseTool):
-    """Tool for sending notifications to Backstage Notification API."""
-    
-    name: str = "backstage_notification"
-    description: str = (
-        "Send notifications to Backstage when message routing failures are detected. "
-        "Input should be a JSON string with keys: title, message, severity (optional), "
-        "topic (optional), and metadata (optional). Example: "
-        '{"title": "Alert", "message": "Issue found", "severity": "high"}'
-    )
-    args_schema: type[BaseModel] = NotificationInput
-    
-    def _run(self, notification_data: str) -> str:
-        """Send a notification to Backstage."""
-        try:
-            # Parse the JSON input
-            try:
-                data = json.loads(notification_data)
-            except json.JSONDecodeError:
-                return f"Error: Invalid JSON format in notification_data: {notification_data}"
-            
-            # Extract required fields with defaults
-            title = data.get("title", "AI Agent Notification")
-            message = data.get("message", "")
-            severity = data.get("severity", "normal")
-            topic = data.get("topic", "ai-agent-alerts")
-            metadata = data.get("metadata", {})
-            
-            notification_payload = {
+    Args:
+        title: The notification title
+        description: The notification description/message
+        entity_ref: Optional entity reference to send to. If None, uses settings default.
+        
+    Returns:
+        str: Success or error message
+    """
+    try:
+        # Use provided entity_ref or fall back to settings default
+        recipient_entity = entity_ref if entity_ref else settings.notification_recipient_entity
+        
+        # Format according to Backstage Notifications API
+        notification_payload = {
+            "payload": {
                 "title": title,
-                "message": message,
-                "severity": severity,
-                "topic": topic,
-                "source": settings.service_name,
-                "timestamp": None,  # Will be set by the API
-                "metadata": metadata
+                "description": description
+            },
+            "recipients": {
+                "type": "entity",
+                "entityRef": recipient_entity
             }
-            
-            headers = {
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {settings.backstage_token}"
-            }
-            
-            # Backstage Notification API endpoint
-            url = f"{settings.backstage_api_url}/notifications"
-            
-            logger.info(f"Sending notification to Backstage: {title}")
-            logger.debug(f"Notification payload: {notification_payload}")
-            
-            response = requests.post(
-                url,
-                headers=headers,
-                json=notification_payload,
-                timeout=30
-            )
-            
-            if response.status_code in [200, 201, 202]:
-                logger.info(f"Notification sent successfully: {response.status_code}")
-                return f"Notification sent successfully to Backstage (status: {response.status_code})"
-            else:
-                error_msg = f"Failed to send notification: {response.status_code} - {response.text}"
-                logger.error(error_msg)
-                return f"Error: {error_msg}"
-                
-        except requests.exceptions.RequestException as e:
-            error_msg = f"Network error sending notification: {str(e)}"
+        }
+        
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {settings.backstage_token}"
+        }
+        
+        # Backstage Notification API endpoint
+        url = f"{settings.backstage_api_url}/notifications"
+        
+        logger.info(f"Sending notification to Backstage: {title} -> {recipient_entity}")
+        logger.debug(f"Notification payload: {notification_payload}")
+        
+        response = requests.post(
+            url,
+            headers=headers,
+            json=notification_payload,
+            timeout=30
+        )
+        
+        if response.status_code in [200, 201, 202]:
+            logger.info(f"Notification sent successfully: {response.status_code}")
+            return f"Notification sent successfully to Backstage (status: {response.status_code})"
+        else:
+            error_msg = f"Failed to send notification: {response.status_code} - {response.text}"
             logger.error(error_msg)
             return f"Error: {error_msg}"
-        except Exception as e:
-            error_msg = f"Unexpected error sending notification: {str(e)}"
-            logger.error(error_msg)
-            return f"Error: {error_msg}"
-    
-    async def _arun(self, notification_data: str) -> str:
-        """Async version of the notification tool."""
-        # For now, we'll use the sync version
-        # In production, consider using aiohttp for async requests
-        return self._run(notification_data)
+            
+    except requests.exceptions.RequestException as e:
+        error_msg = f"Network error sending notification: {str(e)}"
+        logger.error(error_msg)
+        return f"Error: {error_msg}"
+    except Exception as e:
+        error_msg = f"Unexpected error sending notification: {str(e)}"
+        logger.error(error_msg)
+        return f"Error: {error_msg}"
 
 
-def create_backstage_notification_tool() -> BackstageNotificationTool:
-    """Factory function to create the Backstage notification tool."""
-    return BackstageNotificationTool() 
+ 

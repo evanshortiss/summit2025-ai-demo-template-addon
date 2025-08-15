@@ -67,16 +67,9 @@ class Settings(BaseSettings):
     analysis_prompt_template: str = Field(
         default="""{%- if values.analysisPrompt %}{{ values.analysisPrompt | replace('\n', '\\n') }}{% else %}You are an expert system analyst reviewing a message that failed to be routed properly.
 
-Analyze the following message and determine the most likely cause of the routing failure:
+Analyze the following message and determine the most likely cause of the routing failure. Use the values under the "errors" key as a primary means to determine the cause of the routing failure:
 
 Message: {message}
-
-Consider these common failure causes:
-1. Ambiguous intent - message could fit multiple categories
-2. Missing context - insufficient information to classify
-3. New domain - message relates to a domain not covered by existing categories
-4. Technical format issues - message format or encoding problems
-5. Language barriers - non-English or unclear language
 
 Provide a brief analysis and suggested resolution.{% endif %}""",
         description="Prompt template for AI analysis"
@@ -86,7 +79,7 @@ Provide a brief analysis and suggested resolution.{% endif %}""",
     
     # Backstage Configuration
     backstage_api_url: str = Field(
-        default="http://localhost:7007/api", 
+        default="http://backstage-developer-hub.backstage.svc.cluster.local/api", 
         description="Backstage API base URL"
     )
     backstage_token: str = Field(
@@ -96,6 +89,10 @@ Provide a brief analysis and suggested resolution.{% endif %}""",
     notification_title: str = Field(
         default="Message Routing Failure Detected", 
         description="Default notification title"
+    )
+    notification_recipient_entity: str = Field(
+        default="${{ values.owner }}", 
+        description="Entity reference for notification recipients"
     )
     
     # Health and Monitoring
