@@ -64,37 +64,7 @@ class TestBackstageCatalogTool:
         assert "group:default/frontend-team" in result
         mock_get.assert_called_once()
     
-    @patch('src.tools.backstage_catalog.requests.get')
-    def test_groups_lookup_with_query(self, mock_get):
-        """Test groups lookup with query filter."""
-        mock_response = Mock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = [
-            {
-                "kind": "Group",
-                "metadata": {
-                    "name": "platform-team",
-                    "namespace": "default",
-                    "title": "Platform Team"
-                },
-                "spec": {
-                    "type": "team"
-                }
-            }
-        ]
-        mock_get.return_value = mock_response
-        
-        tool = BackstageCatalogTool()
-        result = tool._run(query="platform")
-        
-        assert "Found 1 group(s)" in result
-        assert "Platform Team" in result
-        assert "group:default/platform-team" in result
-        
-        # Verify the API call included the query filter
-        call_args = mock_get.call_args
-        assert "metadata.name=platform" in call_args[1]['params']['filter']
-    
+
     @patch('src.tools.backstage_catalog.requests.get')
     def test_no_groups_found(self, mock_get):
         """Test when no groups are found."""

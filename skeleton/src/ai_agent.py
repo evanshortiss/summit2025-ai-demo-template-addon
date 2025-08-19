@@ -35,21 +35,17 @@ class MessageAnalysisAgent:
         )
     
     def _create_tools(self) -> List:
-        """Create the tools available to the agent."""
         tools = []
         
-        # Add Backstage Catalog tool for group lookups
         catalog_tool = create_backstage_catalog_tool()
         tools.append(catalog_tool)
         
-        # Add Backstage Notification tool
         notification_tool = create_backstage_notification_tool()
         tools.append(notification_tool)
         
         return tools
     
     def _create_memory(self) -> ConversationBufferWindowMemory:
-        """Create conversation memory for the agent."""
         return ConversationBufferWindowMemory(
             memory_key="chat_history",
             k=10,  # Keep last 10 interactions
@@ -57,7 +53,6 @@ class MessageAnalysisAgent:
         )
     
     def _create_agent(self):
-        """Create the LangChain agent."""
         return initialize_agent(
             tools=self.tools,
             llm=self.llm,
@@ -65,11 +60,10 @@ class MessageAnalysisAgent:
             memory=self.memory,
             verbose=True,
             handle_parsing_errors=True,
-            max_iterations=5  # Increased to allow for tool usage
+            max_iterations=10  # Increased to allow for tool usage
         )
     
     def process_unknown_message(self, message_content: str, metadata: Dict[str, Any]) -> None:
-        """Process a message from the unknown topic."""
         try:
             logger.info(f"Processing unknown message: {message_content[:100]}...")
             
@@ -88,7 +82,7 @@ You are an expert system analyst reviewing a message that failed to be routed pr
 - Headers: {metadata.get('headers', {{}})}
 
 **Your Task:**
-1. Analyze this message to determine why it failed to be classified
+1. Analyze this message to determine why it was sent for review
 2. Use the analysis prompt template: {settings.analysis_prompt_template.format(message=message_content)}
 3. If helpful for your analysis, look up relevant teams or groups in the Backstage Catalog to understand organizational structure
 4. Provide a detailed explanation of the likely cause and specific recommendations
@@ -117,9 +111,6 @@ Please complete your analysis and send a notification to the relevant group with
 
 **Error:** {str(e)}
 
-**Original Message:** 
-{message_content[:200]}{'...' if len(message_content) > 200 else ''}
-
 **Metadata:**
 - Topic: {metadata.get('topic')}
 - Partition: {metadata.get('partition')}
@@ -129,7 +120,6 @@ Please complete your analysis and send a notification to the relevant group with
 Please investigate this message routing failure manually."""
                 
                 send_backstage_notification(title, description)
-                logger.info("Sent fallback notification due to agent error")
             except Exception as notification_error:
                 logger.error(f"Failed to send fallback notification: {notification_error}")
     

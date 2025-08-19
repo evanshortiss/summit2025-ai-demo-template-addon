@@ -64,7 +64,6 @@ class MessageProcessor:
         return consumer
     
     def start_consuming(self) -> None:
-        """Start consuming messages from Kafka."""
         try:
             self.consumer = self.create_consumer()
             self.running = True
@@ -152,11 +151,9 @@ class UnknownTopicMonitor:
             logger.debug(f"Ignoring message from topic: {message.topic}")
     
     def start_monitoring(self) -> None:
-        """Start monitoring the unknown topic."""
         logger.info("Starting unknown topic monitor...")
         self.message_processor.start_consuming()
     
     def stop_monitoring(self) -> None:
-        """Stop monitoring the unknown topic."""
         logger.info("Stopping unknown topic monitor...")
         self.message_processor.stop_consuming() 

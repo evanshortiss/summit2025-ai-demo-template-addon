@@ -3,7 +3,6 @@
 import json
 import logging
 from typing import List, Dict, Any
-from pydantic import BaseModel, Field
 import requests
 from langchain.tools import BaseTool
 
@@ -11,27 +10,16 @@ from ..config import settings
 
 logger = logging.getLogger(__name__)
 
-
-class CatalogLookupInput(BaseModel):
-    """Input schema for the Backstage Catalog lookup tool."""
-    
-    query: str = Field(
-        description="Optional query parameter to filter groups (leave empty to list all groups)"
-    )
-
-
 class BackstageCatalogTool(BaseTool):
     """Tool for querying the Backstage Catalog API to list Groups."""
     
     name: str = "backstage_catalog_groups"
     description: str = (
-        "Look up and list Groups from the Backstage Catalog API. "
-        "This can help identify team structures and ownership for routing messages. "
-        "Provide an optional query parameter to filter groups, or leave empty to list all groups."
+        "Look up and list all Groups from the Backstage Catalog API. "
+        "This can help identify team structures and ownership for routing messages."
     )
-    args_schema: type[BaseModel] = CatalogLookupInput
     
-    def _run(self, query: str = "") -> str:
+    def _run(self) -> str:
         """Query the Backstage Catalog API for Groups."""
         try:
             headers = {
@@ -47,12 +35,7 @@ class BackstageCatalogTool(BaseTool):
                 "filter": "kind=group"
             }
             
-            # Add optional query filter
-            if query.strip():
-                # Add text search filter if query is provided
-                params["filter"] += f",metadata.name={query}"
-            
-            logger.info(f"Querying Backstage Catalog for Groups with params: {params}")
+            logger.info("Querying Backstage Catalog for all Groups")
             
             response = requests.get(
                 url,
@@ -106,11 +89,11 @@ class BackstageCatalogTool(BaseTool):
             logger.error(error_msg)
             return f"Error: {error_msg}"
     
-    async def _arun(self, query: str = "") -> str:
+    async def _arun(self) -> str:
         """Async version of the catalog lookup tool."""
         # For now, we'll use the sync version
         # In production, consider using aiohttp for async requests
-        return self._run(query)
+        return self._run()
 
 
 def create_backstage_catalog_tool() -> BackstageCatalogTool:

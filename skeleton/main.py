@@ -35,11 +35,8 @@ structlog.configure(
 logger = structlog.get_logger()
 
 
-class AIAgentService:
-    """Main service class for the AI Agent."""
-    
+class AIAgentService:    
     def __init__(self):
-        """Initialize the AI Agent service."""
         self.ai_agent = MessageAnalysisAgent()
         self.kafka_monitor = UnknownTopicMonitor(self._handle_unknown_message)
         self.web_server = WebServer(self)
@@ -60,7 +57,6 @@ class AIAgentService:
         self.stop()
     
     def _handle_unknown_message(self, message_content: str, metadata: Dict[str, Any]):
-        """Handle messages from the unknown topic."""
         try:
             logger.info("Processing unknown message", 
                        topic=metadata.get('topic'),
@@ -119,7 +115,6 @@ class AIAgentService:
             logger.info("AI Agent service stopped")
     
     def health_check(self) -> Dict[str, Any]:
-        """Return health status of the service."""
         agent_status = self.ai_agent.get_agent_status()
         
         return {

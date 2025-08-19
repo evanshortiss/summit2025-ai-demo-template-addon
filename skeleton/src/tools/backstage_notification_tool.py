@@ -34,24 +34,14 @@ class BackstageNotificationTool(BaseTool):
         "Send a notification to Backstage when you have completed your analysis of a message routing failure. "
         "Use this tool to notify the appropriate team about your findings and recommendations. "
         "Provide a clear title and detailed description of your analysis. "
-        "Optionally specify an entity_ref (like 'group:default/team-name') to send to a specific team, "
-        "otherwise it will use the default configured recipient."
+        "Optionally specify an entity_ref (like 'group:default/team-name') to send to a specific team, or user"
+        "otherwise it will use a default configured recipient."
     )
     args_schema: type[BaseModel] = NotificationInput
     
     def _run(self, title: str, description: str, entity_ref: Optional[str] = None) -> str:
         """Send a notification to Backstage."""
-        try:
-            result = send_backstage_notification(title, description, entity_ref)
-            if entity_ref:
-                logger.info(f"Notification tool sent notification to {entity_ref}: {title}")
-            else:
-                logger.info(f"Notification tool sent notification to default recipient: {title}")
-            return result
-        except Exception as e:
-            error_msg = f"Failed to send notification: {str(e)}"
-            logger.error(error_msg)
-            return f"Error: {error_msg}"
+        return send_backstage_notification(title, description, entity_ref)
     
     async def _arun(self, title: str, description: str, entity_ref: Optional[str] = None) -> str:
         """Async version of the notification tool."""
