@@ -111,4 +111,4 @@ env:
     valueFrom:
       secretKeyRef:
         name: ${{values.name}}-backstage-secret
-        key: api-token
+        key: notifications-token
