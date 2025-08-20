@@ -4,8 +4,7 @@ import json
 import logging
 from typing import Dict, Any, List
 from langchain.agents import AgentType, initialize_agent
-from langchain_openai import ChatOpenAI
-from langchain.memory import ConversationBufferWindowMemory
+from langchain_openai import OpenAI
 
 from .config import settings
 from .tools.backstage_catalog import create_backstage_catalog_tool
@@ -18,20 +17,20 @@ class MessageAnalysisAgent:
     """AI Agent for analyzing failed message routing and sending notifications."""
     
     def __init__(self):
-        """Initialize the AI agent with tools and memory."""
+        """Initialize the AI agent with tools."""
         self.llm = self._create_llm()
         self.tools = self._create_tools()
-        self.memory = self._create_memory()
         self.agent = self._create_agent()
         
-    def _create_llm(self) -> ChatOpenAI:
+    def _create_llm(self) -> OpenAI:
         """Create the OpenAI language model."""
-        return ChatOpenAI(
-            model_name=settings.ai_model,
-            temperature=settings.ai_temperature,
-            max_tokens=settings.ai_max_tokens,
-            openai_api_key=settings.openai_api_key,
-            openai_api_base=settings.inference_server_url
+        return OpenAI(
+            temperature=0.0
+            # model_name=settings.ai_model,
+            # temperature=settings.ai_temperature,
+            # max_tokens=settings.ai_max_tokens,
+            # openai_api_key=settings.openai_api_key,
+            # openai_api_base=settings.inference_server_url
         )
     
     def _create_tools(self) -> List:
@@ -45,58 +44,58 @@ class MessageAnalysisAgent:
         
         return tools
     
-    def _create_memory(self) -> ConversationBufferWindowMemory:
-        return ConversationBufferWindowMemory(
-            memory_key="chat_history",
-            k=10,  # Keep last 10 interactions
-            return_messages=True
-        )
-    
     def _create_agent(self):
+        # System message for the agent
+        system_message = """You are an expert system analyst specializing in message routing failure analysis.
+
+Your role is to:
+1. Analyze messages that failed to be routed properly
+2. Identify the likely cause of routing failures
+3. Provide specific recommendations for resolution
+4. Send notifications to relevant teams with your findings
+
+When analyzing messages, consider these common failure causes:
+- Ambiguous intent - message could fit multiple categories
+- Missing context - insufficient information to classify
+- Data format issues - malformed or unexpected structure
+- New content type - content not covered by existing rules
+- Schema validation failures - data doesn't match expected format
+
+Always use the available tools to complete your analysis and send notifications."""
+
         return initialize_agent(
             tools=self.tools,
             llm=self.llm,
             agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-            memory=self.memory,
             verbose=True,
             handle_parsing_errors=True,
-            max_iterations=10  # Increased to allow for tool usage
+            max_iterations=5,
+            agent_kwargs={
+                "system_message": system_message
+            }
         )
     
     def process_unknown_message(self, message_content: str, metadata: Dict[str, Any]) -> None:
         try:
             logger.info(f"Processing unknown message: {message_content[:100]}...")
             
-            # Create a comprehensive prompt for the agent
-            analysis_prompt = f"""
-You are an expert system analyst reviewing a message that failed to be routed properly. A message has been sent to the 'unknown' topic, indicating a classification failure.
-
-**Message Content:**
-{message_content}
-
-**Message Metadata:**
-- Topic: {metadata.get('topic')}
-- Partition: {metadata.get('partition')}
-- Offset: {metadata.get('offset')}
-- Timestamp: {metadata.get('timestamp')}
-- Headers: {metadata.get('headers', {{}})}
-
-**Your Task:**
-1. Analyze this message to determine why it was sent for review
-2. Use the analysis prompt template: {settings.analysis_prompt_template.format(message=message_content)}
-3. If helpful for your analysis, look up relevant teams or groups in the Backstage Catalog to understand organizational structure
-4. Provide a detailed explanation of the likely cause and specific recommendations
-5. **IMPORTANT: Send a notification to Backstage** with your analysis results using the notification tool
-
-**Available Tools:**
-- `backstage_catalog_groups`: Look up Groups in the Backstage Catalog to understand team structures and ownership
-- `send_backstage_notification`: Send a notification to Backstage with your analysis findings (YOU MUST USE THIS)
-
-Please complete your analysis and send a notification to the relevant group with your findings.
-"""
+            # Create a simple, focused prompt for the agent
+            headers_json = json.dumps(metadata.get('headers', {}), indent=2)
             
+            # Simple prompt that focuses on the task
+            input = f"""Analyze this failed message that failed to be routed properly, and generate a one sentence summary of the likely cause of the routing failure.
+
+Message: {message_content}
+
+Metadata: Topic={metadata.get('topic')}, Partition={metadata.get('partition')}, Offset={metadata.get('offset')}
+
+Headers: {headers_json}
+
+Always send a notification containing your analysis summary to the group:default/rhdh entity, as well as the other entity you deem relevant."""
+
+            logger.info(f"Input prompt: {input}")
             # Use the agent to analyze the message and send notification
-            result = self.agent.run(analysis_prompt)
+            result = self.agent.run(input)
             
             logger.info(f"Agent completed analysis and notification: {result}")
             
@@ -131,7 +130,6 @@ Please investigate this message routing failure manually."""
             "temperature": settings.ai_temperature,
             "max_tokens": settings.ai_max_tokens,
             "tools_count": len(self.tools),
-            "memory_messages": len(self.memory.chat_memory.messages) if self.memory.chat_memory else 0,
             "service_name": settings.service_name,
             "available_tools": [tool.name for tool in self.tools]
         }

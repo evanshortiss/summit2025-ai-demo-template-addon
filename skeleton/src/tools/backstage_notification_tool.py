@@ -14,15 +14,8 @@ logger = logging.getLogger(__name__)
 class NotificationInput(BaseModel):
     """Input schema for the Backstage notification tool."""
     
-    title: str = Field(
-        description="The title of the notification"
-    )
-    description: str = Field(
-        description="The detailed description/message content of the notification"
-    )
-    entity_ref: Optional[str] = Field(
-        default=None,
-        description="Optional entity reference to send the notification to (e.g. 'group:default/platform-team'). If not provided, uses the default configured recipient."
+    notification_data: str = Field(
+        description="JSON string containing notification data with fields: title (required), description (required), entity_ref (optional). Example: '{\"title\": \"Alert\", \"description\": \"Issue found\", \"entity_ref\": \"group:default/platform-team\"}'"
     )
 
 
@@ -32,20 +25,42 @@ class BackstageNotificationTool(BaseTool):
     name: str = "send_backstage_notification"
     description: str = (
         "Send a notification to Backstage when you have completed your analysis of a message routing failure. "
-        "Use this tool to notify the appropriate team about your findings and recommendations. "
-        "Provide a clear title and detailed description of your analysis. "
-        "Optionally specify an entity_ref (like 'group:default/team-name') to send to a specific team, or user"
-        "otherwise it will use a default configured recipient."
+        "Input should be a JSON string with 'title' (required), 'description' (required), and optionally 'entity_ref' "
+        "to send to a specific team. Example: {{\"title\": \"Routing Issue Found\", \"description\": \"Details...\", \"entity_ref\": \"group:default/platform-team\"}}"
     )
     args_schema: type[BaseModel] = NotificationInput
     
-    def _run(self, title: str, description: str, entity_ref: Optional[str] = None) -> str:
+    def _run(self, notification_data: str) -> str:
         """Send a notification to Backstage."""
-        return send_backstage_notification(title, description, entity_ref)
+        try:
+            logger.info(f"Notification tool invoked with input str: {notification_data}")
+
+            # Parse the JSON input
+            data = json.loads(notification_data)
+            title = data.get('title', '')
+            description = data.get('description', '')
+            entity_ref = data.get('entity_ref')
+            
+            if not title:
+                return "Error: title is required"
+            if not description:
+                return "Error: description is required"
+            
+            result = send_backstage_notification(title, description, entity_ref)
+            logger.info(f"Notification sent successfully: {title}")
+            return result
+        except json.JSONDecodeError as e:
+            error_msg = f"Failed to parse notification data JSON: {str(e)}"
+            logger.error(error_msg)
+            return error_msg
+        except Exception as e:
+            error_msg = f"Failed to send notification: {str(e)}"
+            logger.error(error_msg)
+            return error_msg
     
-    async def _arun(self, title: str, description: str, entity_ref: Optional[str] = None) -> str:
+    async def _arun(self, notification_data: str) -> str:
         """Async version of the notification tool."""
-        return self._run(title, description, entity_ref)
+        return self._run(notification_data)
 
 
 def create_backstage_notification_tool() -> BackstageNotificationTool:

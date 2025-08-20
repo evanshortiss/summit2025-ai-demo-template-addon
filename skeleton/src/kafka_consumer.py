@@ -119,21 +119,21 @@ class MessageProcessor:
 
 
 class UnknownTopicMonitor:
-    """Specialized monitor for the 'unknown' topic."""
+    """Specialized monitor for the configured monitored topic."""
     
     def __init__(self, ai_agent_callback: Callable[[str, Dict[str, Any]], None]):
-        """Initialize the unknown topic monitor.
+        """Initialize the topic monitor.
         
         Args:
-            ai_agent_callback: Function to call when an unknown message is detected
+            ai_agent_callback: Function to call when a message is detected on the monitored topic
         """
         self.ai_agent_callback = ai_agent_callback
         self.message_processor = MessageProcessor(self._handle_message)
     
     def _handle_message(self, message: KafkaMessage) -> None:
-        """Handle messages from the unknown topic."""
-        if message.topic == "unknown":
-            logger.info(f"Unknown message detected: {message.value[:100]}...")
+        """Handle messages from the monitored topic."""
+        if message.topic == settings.monitored_topic:
+            logger.info(f"Message detected on monitored topic '{message.topic}': {message.value[:100]}...")
             
             # Extract metadata
             metadata = {
@@ -148,12 +148,12 @@ class UnknownTopicMonitor:
             # Call the AI agent to analyze the message
             self.ai_agent_callback(message.value, metadata)
         else:
-            logger.debug(f"Ignoring message from topic: {message.topic}")
+            logger.debug(f"Ignoring message from topic: {message.topic} (not monitoring this topic)")
     
     def start_monitoring(self) -> None:
-        logger.info("Starting unknown topic monitor...")
+        logger.info(f"Starting topic monitor for '{settings.monitored_topic}'...")
         self.message_processor.start_consuming()
     
     def stop_monitoring(self) -> None:
-        logger.info("Stopping unknown topic monitor...")
+        logger.info("Stopping topic monitor...")
         self.message_processor.stop_consuming() 

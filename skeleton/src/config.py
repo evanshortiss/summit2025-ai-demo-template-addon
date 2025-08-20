@@ -64,22 +64,13 @@ class Settings(BaseSettings):
         default="${{ values.inferenceServerUrl }}", 
         description="Inference server URL for the AI model"
     )
-    analysis_prompt_template: str = Field(
-        default="""{%- if values.analysisPrompt %}{{ values.analysisPrompt | replace('\n', '\\n') }}{% else %}You are an expert system analyst reviewing a message that failed to be routed properly.
 
-Analyze the following message and determine the most likely cause of the routing failure. Use the values under the "errors" key as a primary means to determine the cause of the routing failure:
-
-Message: {message}
-
-Provide a brief analysis and suggested resolution.{% endif %}""",
-        description="Prompt template for AI analysis"
-    )
     ai_temperature: float = Field(default=0.3, description="AI model temperature")
     ai_max_tokens: int = Field(default=500, description="Maximum tokens for AI response")
     
     # Backstage Configuration
     backstage_api_url: str = Field(
-        default="http://backstage-developer-hub.backstage.svc.cluster.local/api", 
+        default="http://backstage-internal.backstage.svc.cluster.local/api", 
         description="Backstage API base URL"
     )
     backstage_token: str = Field(

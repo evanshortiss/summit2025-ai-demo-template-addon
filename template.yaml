@@ -89,7 +89,6 @@ spec:
     - title: AI Configuration
       required:
         - aiModel
-        - analysisPrompt
       properties:
         aiModel:
           title: AI Model
@@ -103,26 +102,7 @@ spec:
               kind: Component
               spec.type: model-server
 
-        analysisPrompt:
-          title: Analysis Prompt Template
-          type: string
-          ui:widget: textarea
-          description: Custom prompt template for analyzing failed messages
-          default: |
-            You are an expert system analyst reviewing a message that failed to be routed properly.
-            
-            Analyze the following message and determine the most likely cause of the routing failure:
-            
-            Message: {message}
-            
-            Consider these common failure causes:
-            1. Ambiguous intent - message could fit multiple categories
-            2. Missing context - insufficient information to classify
-            3. New domain - message relates to a domain not covered by existing categories
-            4. Technical format issues - message format or encoding problems
-            5. Language barriers - non-English or unclear language
-            
-            Provide a brief analysis and suggested resolution.
+
 
   steps:
     - id: parseTopicEntity
@@ -160,7 +140,6 @@ spec:
           # Extract the actual topic name from the kafka.io/topic-name annotation
           kafkaTopicName: ${{ steps.parseTopicEntity.output.entity.metadata.annotations['kafka.io/topic-name'] }}
           aiModel: ${{ parameters.aiModel }}
-          analysisPrompt: ${{ parameters.analysisPrompt }}
           inferenceServerUrl: ${{ steps.parseAiModelEntity.output.entity.metadata.links[0].url }}
 
     - id: publish
