@@ -129,7 +129,7 @@ spec:
           cluster: .apps.cluster-c8xh2.c8xh2.sandbox2989.opentlc.com
           image_registry: Quay
           image_organization: quayadmin
-          image_host: quay-c8xh2.apps.cluster-c8xh2.c8xh2.sandbox2989.opentlc.com
+          image_host: quay-nz5zn.apps.cluster-nz5zn.nz5zn.sandbox5486.opentlc.com
           image_name: ${{ parameters.name }}
           quay_destination: quayadmin/${{ parameters.name }}
           name: ${{ parameters.name }}
