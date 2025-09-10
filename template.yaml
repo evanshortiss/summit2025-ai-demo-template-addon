@@ -126,7 +126,7 @@ spec:
           host: gitlab-gitlab.apps.cluster-nz5zn.nz5zn.sandbox5486.opentlc.com
           owner: development
           destination: ${{ parameters.name }}
-          cluster: .apps.cluster-c8xh2.c8xh2.sandbox2989.opentlc.com
+          cluster: .apps.cluster-nz5zn.nz5zn.sandbox5486.opentlc.com
           image_registry: Quay
           image_organization: quayadmin
           image_host: quay-nz5zn.apps.cluster-nz5zn.nz5zn.sandbox5486.opentlc.com
