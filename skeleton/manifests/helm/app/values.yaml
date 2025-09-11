@@ -85,7 +85,7 @@ env:
   - name: AI_MODEL
     value: "${{values.aiModel}}"
   - name: INFERENCE_SERVER_URL
-    value: "${{values.inferenceServerUrl}}"
+    value: "${{values.inferenceServerUrl}}/v1"
   - name: KAFKA_BROKER
     value: "kafka-kafka-bootstrap.kafka.svc.cluster.local:9092"
   - name: KAFKA_SECURITY_PROTOCOL
