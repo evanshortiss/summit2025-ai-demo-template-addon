@@ -25,11 +25,11 @@ class MessageAnalysisAgent:
     def _create_llm(self) -> OpenAI:
         """Create the OpenAI language model."""
         return OpenAI(
-            temperature=0.0
             model_name=settings.ai_model,
             temperature=settings.ai_temperature,
             max_tokens=settings.ai_max_tokens,
-            # openai_api_key=settings.openai_api_key,
+            # This could be replaced if we wanted to use ExternalSecrets
+            openai_api_key="placeholder-key-for-rhoai-without-auth",
             openai_api_base=settings.inference_server_url
         )
     
