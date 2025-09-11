@@ -52,10 +52,6 @@ class Settings(BaseSettings):
     )
     
     # AI Configuration
-    openai_api_key: str = Field(
-        default="", 
-        description="OpenAI API key (set via environment variable)"
-    )
     ai_model: str = Field(
         default="${{ values.aiModel }}", 
         description="AI model resource to use"

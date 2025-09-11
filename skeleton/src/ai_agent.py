@@ -26,11 +26,11 @@ class MessageAnalysisAgent:
         """Create the OpenAI language model."""
         return OpenAI(
             temperature=0.0
-            # model_name=settings.ai_model,
-            # temperature=settings.ai_temperature,
-            # max_tokens=settings.ai_max_tokens,
+            model_name=settings.ai_model,
+            temperature=settings.ai_temperature,
+            max_tokens=settings.ai_max_tokens,
             # openai_api_key=settings.openai_api_key,
-            # openai_api_base=settings.inference_server_url
+            openai_api_base=settings.inference_server_url
         )
     
     def _create_tools(self) -> List:

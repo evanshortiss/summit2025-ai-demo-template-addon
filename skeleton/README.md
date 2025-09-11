@@ -43,7 +43,6 @@ The service is configured through environment variables:
 - `KAFKA_AUTO_OFFSET_RESET`: Consumer offset reset strategy
 
 ### AI Configuration
-- `OPENAI_API_KEY`: OpenAI API key for AI analysis
 - `AI_MODEL`: OpenAI model to use (gpt-4, gpt-4-turbo, gpt-3.5-turbo)
 - `AI_TEMPERATURE`: Model temperature (0.0-1.0)
 - `AI_MAX_TOKENS`: Maximum tokens for AI responses
@@ -117,11 +116,6 @@ spec:
         env:
         - name: KAFKA_BROKERS
           value: "${{ values.kafkaBrokers }}"
-        - name: OPENAI_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: ${{ values.name }}-secrets
-              key: openai-api-key
         - name: BACKSTAGE_TOKEN
           valueFrom:
             secretKeyRef:
@@ -218,7 +212,6 @@ mypy src/
    - Ensure topics exist
 
 2. **OpenAI API Issues**:
-   - Verify `OPENAI_API_KEY` is valid
    - Check API rate limits
    - Monitor token usage
 
