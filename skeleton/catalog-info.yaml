@@ -28,7 +28,7 @@ metadata:
 spec:
   type: service
   lifecycle: experimental
-  owner: ${{ values.owner }}
+  owner: ${{ values.catalog_owner }}
   system: ${{ values.system }}
   dependsOn:
     - resource:kafka-message-broker
