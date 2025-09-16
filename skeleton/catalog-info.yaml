@@ -15,14 +15,14 @@ metadata:
     argocd/app-selector: rht-gitops.com/janus-argocd=${{values.name}}-bootstrap
     backstage.io/kubernetes-id: ${{values.name}}
     janus-idp.io/tekton: ${{values.name}}
-    backstage.io/source-location: url:https://${{values.host}}/${{values.destination}}
+    backstage.io/source-location: url:https://${{values.host}}/${{values.owner}}/${{values.destination}}
     gitlab.com/project-slug: ${{values.owner}}/${{values.destination}}
     quay.io/repository-slug: ${{values.quay_destination}}
   links:
-    - url: https://devspaces.apps.cluster-ntncs.ntncs.sandbox235.opentlc.com/#https://${{values.host}}/${{values.destination}}
+    - url: https://devspaces${{values.cluster}}/#https://${{values.host}}/${{values.destination}}
       title: OpenShift Dev Spaces (VS Code)
       icon: web
-    - url: https://devspacesapps.cluster-ntncs.ntncs.sandbox235.opentlc.com/#https://${{values.host}}/${{values.destination}}?che-editor=che-incubator/che-idea/latest
+    - url: https://devspacesapps${{values.cluster}}/#https://${{values.host}}/${{values.destination}}?che-editor=che-incubator/che-idea/latest
       title: OpenShift Dev Spaces (JetBrains IntelliJ)
       icon: web
 spec:
