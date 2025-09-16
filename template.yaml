@@ -124,7 +124,8 @@ spec:
         url: ./skeleton
         values:
           host: gitlab-gitlab.apps.cluster-nz5zn.nz5zn.sandbox5486.opentlc.com
-          owner: ${{ parameters.owner }}
+          owner: development
+          catalog_owner: ${{ parameters.owner }}
           destination: ${{ parameters.name }}
           cluster: .apps.cluster-nz5zn.nz5zn.sandbox5486.opentlc.com
           image_registry: Quay
