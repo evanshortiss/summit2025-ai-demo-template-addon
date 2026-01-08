@@ -69,6 +69,6 @@ Create the image reference
 {{- if eq .Values.image.registry "Quay" }}
 {{- printf "%s/%s/%s:%s" .Values.image.host .Values.image.organization .Values.image.name .Values.image.tag -}}
 {{- else }}
-{{- printf "%s/%s/%s:latest" .Values.image.host .Values.namespace.name .Values.image.name -}}
+{{- printf "%s/%s/%s:%s" .Values.image.host .Values.image.organization .Values.image.name .Values.image.tag -}}
 {{- end }}
 {{- end }}
