@@ -140,7 +140,6 @@ spec:
       action: publish:github
       input:
         repoVisibility: public
-        allowedHosts: ['github.com']
         description: ${{ parameters.description }}
         repoUrl: github.com?owner=rhdh-demo-gh&repo=${{ parameters.name }}
         defaultBranch: main
