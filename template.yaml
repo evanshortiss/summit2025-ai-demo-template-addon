@@ -160,6 +160,7 @@ spec:
         appName: ${{ parameters.name }}-bootstrap
         argoInstance: main
         namespace: openshift-gitops
+        labelValue: ${{ parameters.name }}
         # projectName: default
         repoUrl: https://github.com/rhdh-demo-gh/${{ parameters.name }}.git
         path: 'manifests/argocd/'

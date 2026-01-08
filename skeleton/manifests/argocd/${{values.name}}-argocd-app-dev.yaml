@@ -6,6 +6,8 @@ metadata:
   namespace: openshift-gitops
   finalizers:
     - resources-finalizer.argocd.argoproj.io
+  labels:
+    backstage.io/app: ${{values.name}}
 spec:
   project: default
   source:
