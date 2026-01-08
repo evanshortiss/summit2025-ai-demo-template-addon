@@ -139,10 +139,14 @@ spec:
       name: Publish to Repository
       action: publish:github
       input:
-        description: 'AI Agent for monitoring Kafka message routing failures'
+        repoVisibility: public
+        allowedHosts: ['github.com']
+        description: ${{ parameters.description }}
         repoUrl: github.com?owner=rhdh-demo-gh&repo=${{ parameters.name }}
         defaultBranch: main
-        repoVisibility: public
+        collaborators:
+          - team: ${{ parameters.owner | parseEntityRef | pick('name') }}
+            access: maintain
 
     - id: register
       name: Register in Catalog
