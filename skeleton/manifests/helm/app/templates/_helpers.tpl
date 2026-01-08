@@ -66,9 +66,10 @@ Create the name of the service account to use
 Create the image reference
 */}}
 {{- define "langchain-agent.image" -}}
+{{- $tag := .Values.image.tag | default "latest" -}}
 {{- if eq .Values.image.registry "Quay" }}
-{{- printf "%s/%s/%s:%s" .Values.image.host .Values.image.organization .Values.image.name .Values.image.tag -}}
+{{- printf "%s/%s/%s:%s" .Values.image.host .Values.image.organization .Values.image.name $tag -}}
 {{- else }}
-{{- printf "%s/%s/%s:%s" .Values.image.host .Values.image.organization .Values.image.name .Values.image.tag -}}
+{{- printf "%s/%s/%s:%s" .Values.image.host .Values.image.organization .Values.image.name $tag -}}
 {{- end }}
 {{- end }}
