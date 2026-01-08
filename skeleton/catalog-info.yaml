@@ -12,17 +12,17 @@ metadata:
     - monitoring
     - notifications
   annotations:
-    argocd/app-selector: rht-gitops.com/janus-argocd=${{values.name}}-bootstrap
+    argocd/app-selector: rht-gitops.com/openshift-gitops=${{values.name}}-bootstrap
     backstage.io/kubernetes-id: ${{values.name}}
-    janus-idp.io/tekton: ${{values.name}}
-    backstage.io/source-location: url:https://${{values.host}}/development/${{values.destination}}
-    gitlab.com/project-slug: development/${{values.destination}}
+    backstage.io/source-location: url:https://${{values.host}}/${{values.owner}}/${{values.destination}}
+    github.com/project-slug: ${{values.owner}}/${{values.destination}}
     quay.io/repository-slug: ${{values.quay_destination}}
+    github.com/workflows: build.yaml
   links:
-    - url: https://devspaces${{values.cluster}}/#https://${{values.host}}/${{values.destination}}
+    - url: https://devspaces${{values.cluster}}/#https://${{values.host}}/${{values.owner}}/${{values.destination}}
       title: OpenShift Dev Spaces (VS Code)
       icon: web
-    - url: https://devspacesapps${{values.cluster}}/#https://${{values.host}}/${{values.destination}}?che-editor=che-incubator/che-idea/latest
+    - url: https://devspacesapps${{values.cluster}}/#https://${{values.host}}/${{values.owner}}/${{values.destination}}?che-editor=che-incubator/che-idea/latest
       title: OpenShift Dev Spaces (JetBrains IntelliJ)
       icon: web
 spec:

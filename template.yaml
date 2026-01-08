@@ -21,6 +21,7 @@ spec:
         - description
         - owner
         - system
+        - repoUrl
       properties:
         name:
           title: Name
@@ -53,14 +54,14 @@ spec:
             allowArbitraryValues: false
             catalogFilter:
               kind: System
-        # repoUrl:
-        #   title: Repository Location
-        #   type: string
-        #   description: Choose a location for the repository
-        #   ui:field: RepoUrlPicker
-        #   ui:options:
-        #     allowedHosts:
-        #       - gitlab-gitlab.apps.cluster-c8xh2.c8xh2.sandbox2989.opentlc.com
+        repoUrl:
+          title: Repository Location
+          type: string
+          description: Choose a location for the repository
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
 
     - title: Kafka Configuration
       required:
@@ -123,8 +124,8 @@ spec:
       input:
         url: ./skeleton
         values:
-          host: gitlab-gitlab.apps.cluster-nz5zn.nz5zn.sandbox5486.opentlc.com
-          owner: development
+          host: github.com
+          owner: ${{ (parameters.repoUrl | parseRepoUrl).owner }}
           catalog_owner: ${{ parameters.owner }}
           destination: ${{ parameters.name }}
           cluster: .apps.cluster-nz5zn.nz5zn.sandbox5486.opentlc.com
@@ -145,10 +146,10 @@ spec:
 
     - id: publish
       name: Publish to Repository
-      action: publish:gitlab
+      action: publish:github
       input:
         description: 'AI Agent for monitoring Kafka message routing failures'
-        repoUrl: gitlab-gitlab.apps.cluster-nz5zn.nz5zn.sandbox5486.opentlc.com?owner=development&repo=${{ parameters.name }}
+        repoUrl: ${{ parameters.repoUrl }}
         defaultBranch: main
         repoVisibility: public
 
@@ -165,8 +166,9 @@ spec:
       input:
         appName: ${{ parameters.name }}-bootstrap
         argoInstance: main
-        namespace: janus-argocd
-        repoUrl: https://gitlab-gitlab.apps.cluster-nz5zn.nz5zn.sandbox5486.opentlc.com/development/${{ parameters.name }}.git
+        namespace: openshift-gitops
+        projectName: default
+        repoUrl: https://github.com/${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ parameters.name }}.git
         path: 'manifests/argocd/'
 
   output:
