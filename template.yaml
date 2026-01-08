@@ -121,10 +121,10 @@ spec:
           destination: ${{ parameters.name }}
           cluster: .apps.cluster-nz5zn.nz5zn.sandbox5486.opentlc.com
           image_registry: Quay
-          image_organization: quayadmin
-          image_host: quay-nz5zn.apps.cluster-nz5zn.nz5zn.sandbox5486.opentlc.com
+          image_organization: rhdh-demo-gh
+          image_host: ghcr.io
           image_name: ${{ parameters.name }}
-          quay_destination: quayadmin/${{ parameters.name }}
+          quay_destination: rhdh-demo-gh/${{ parameters.name }}
           name: ${{ parameters.name }}
           description: ${{ parameters.description }}
           system: ${{ parameters.system }}

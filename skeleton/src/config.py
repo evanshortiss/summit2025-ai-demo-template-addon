@@ -66,7 +66,7 @@ class Settings(BaseSettings):
     
     # Backstage Configuration
     backstage_api_url: str = Field(
-        default="http://backstage-internal.backstage.svc.cluster.local/api", 
+        default="http://backstage-developer-hub.ai-rhdh.svc.cluster.local/api", 
         description="Backstage API base URL"
     )
     backstage_token: str = Field(
