@@ -103,7 +103,4 @@ env:
   - name: NOTIFICATION_RECIPIENT_ENTITY
     value: "${{values.owner}}"
   - name: BACKSTAGE_TOKEN
-    valueFrom:
-      secretKeyRef:
-        name: ${{values.name}}-backstage-secret
-        key: notifications-token
+    value: "jHYtxs7CavUaxoI+Rm+Ri6dZm8vf76vp"
