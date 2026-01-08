@@ -21,7 +21,6 @@ spec:
         - description
         - owner
         - system
-        - repoUrl
       properties:
         name:
           title: Name
@@ -54,14 +53,6 @@ spec:
             allowArbitraryValues: false
             catalogFilter:
               kind: System
-        repoUrl:
-          title: Repository Location
-          type: string
-          description: Choose a location for the repository
-          ui:field: RepoUrlPicker
-          ui:options:
-            allowedHosts:
-              - github.com
 
     - title: Kafka Configuration
       required:
@@ -125,7 +116,7 @@ spec:
         url: ./skeleton
         values:
           host: github.com
-          owner: ${{ (parameters.repoUrl | parseRepoUrl).owner }}
+          owner: rhdh-demo-gh
           catalog_owner: ${{ parameters.owner }}
           destination: ${{ parameters.name }}
           cluster: .apps.cluster-nz5zn.nz5zn.sandbox5486.opentlc.com
@@ -149,7 +140,7 @@ spec:
       action: publish:github
       input:
         description: 'AI Agent for monitoring Kafka message routing failures'
-        repoUrl: ${{ parameters.repoUrl }}
+        repoUrl: github.com?owner=rhdh-demo-gh&repo=${{ parameters.name }}
         defaultBranch: main
         repoVisibility: public
 
@@ -168,7 +159,7 @@ spec:
         argoInstance: main
         namespace: openshift-gitops
         projectName: default
-        repoUrl: https://github.com/${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ parameters.name }}.git
+        repoUrl: https://github.com/rhdh-demo-gh/${{ parameters.name }}.git
         path: 'manifests/argocd/'
 
   output:
