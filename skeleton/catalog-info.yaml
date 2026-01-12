@@ -12,7 +12,7 @@ metadata:
     - monitoring
     - notifications
   annotations:
-    argocd/app-selector: rht-gitops.com/openshift-gitops=${{values.name}}-bootstrap
+    argocd/app-selector: backstage.io/app=${{values.name}}
     backstage.io/kubernetes-id: ${{values.name}}
     backstage.io/source-location: url:https://${{values.host}}/${{values.owner}}/${{values.destination}}
     github.com/project-slug: ${{values.owner}}/${{values.destination}}
