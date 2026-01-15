@@ -231,4 +231,4 @@ mypy src/
 
 ## Support
 
-For questions and support, please contact the ${{ values.owner }} team or create an issue in the repository. 
+For questions and support, please contact the ${{ values.catalog_owner }} team or create an issue in the repository. 

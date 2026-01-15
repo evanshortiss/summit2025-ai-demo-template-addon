@@ -1,6 +1,6 @@
 FROM registry.access.redhat.com/ubi8/python-39@sha256:49118ed4ee77feab76867aa49cbadbedc02cfee9a6fdca70caf7f3a05b64b897
 
-LABEL maintainer="${{ values.owner }}"
+LABEL maintainer="${{ values.catalog_owner }}"
 LABEL description="${{ values.description }}"
 
 # Set working directory

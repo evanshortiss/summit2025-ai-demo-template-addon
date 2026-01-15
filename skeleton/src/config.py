@@ -78,7 +78,7 @@ class Settings(BaseSettings):
         description="Default notification title"
     )
     notification_recipient_entity: str = Field(
-        default="${{ values.owner }}", 
+        default="${{ values.catalog_owner }}", 
         description="Entity reference for notification recipients"
     )
     

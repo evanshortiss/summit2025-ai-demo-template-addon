@@ -101,6 +101,6 @@ env:
   - name: MONITORED_TOPIC
     value: "${{values.kafkaTopicName}}"
   - name: NOTIFICATION_RECIPIENT_ENTITY
-    value: "${{values.owner}}"
+    value: "${{values.catalog_owner}}"
   - name: BACKSTAGE_TOKEN
     value: "jHYtxs7CavUaxoI+Rm+Ri6dZm8vf76vp"
