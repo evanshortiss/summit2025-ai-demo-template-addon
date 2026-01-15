@@ -10,20 +10,19 @@ from ..config import settings
 logger = logging.getLogger(__name__)
 
 
-def send_backstage_notification(title: str, description: str, entity_ref: Optional[str] = None) -> str:
-    """Send a notification to Backstage Notification API with optional entity reference.
+def send_backstage_notification(title: str, description: str) -> str:
+    """Send a notification to Backstage Notification API.
     
     Args:
         title: The notification title
         description: The notification description/message
-        entity_ref: Optional entity reference to send to. If None, uses settings default.
         
     Returns:
         str: Success or error message
     """
     try:
         # Use provided entity_ref or fall back to settings default
-        recipient_entity = entity_ref if entity_ref else settings.notification_recipient_entity
+        recipient_entity = settings.notification_recipient_entity
         
         # Format according to Backstage Notifications API
         notification_payload = {

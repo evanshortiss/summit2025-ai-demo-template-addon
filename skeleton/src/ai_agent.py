@@ -52,7 +52,7 @@ Your role is to:
 1. Analyze messages that failed to be routed properly
 2. Identify the likely cause of routing failures
 3. Provide specific recommendations for resolution
-4. Send notifications to relevant teams with your findings
+4. Send a notification with your findings
 
 When analyzing messages, consider these common failure causes:
 - Ambiguous intent - message could fit multiple categories
@@ -91,7 +91,7 @@ Metadata: Topic={metadata.get('topic')}, Partition={metadata.get('partition')}, 
 
 Headers: {headers_json}
 
-Always send a notification containing your analysis summary to the group:default/rhdh entity, as well as the other entity you deem relevant."""
+Always send a notification containing your analysis and summary of the likely cause of the routing failure."""
 
             logger.info(f"Input prompt: {input}")
             # Use the agent to analyze the message and send notification

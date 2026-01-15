@@ -116,7 +116,8 @@ spec:
         url: ./skeleton
         values:
           host: github.com
-          owner: rhdh-demo-gh
+          # Notification recipient entity!
+          owner: ${{ parameters.owner }}
           catalog_owner: ${{ parameters.owner }}
           destination: ${{ parameters.name }}
           cluster: .apps.cluster-nz5zn.nz5zn.sandbox5486.opentlc.com
