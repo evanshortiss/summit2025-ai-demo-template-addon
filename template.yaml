@@ -131,7 +131,7 @@ spec:
           monitoredTopic: ${{ parameters.monitoredTopic }}
           # Extract the actual topic name from the kafka.io/topic-name annotation
           kafkaTopicName: ${{ steps.parseTopicEntity.output.entity.metadata.annotations['kafka.io/topic-name'] }}
-          aiModel: ${{ steps.parseAiModelEntity.output.entity.metadata.name }}
+          aiModel: ${{ steps.parseAiModelEntity.output.entity.spec.dependsOn[0] | parseEntityRef | pick('name') }}
           inferenceServerUrl: ${{ steps.parseAiModelEntity.output.entity.metadata.links[0].url }}
 
     - id: publish
